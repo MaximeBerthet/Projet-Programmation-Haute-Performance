@@ -15,32 +15,61 @@ import junit.framework.TestCase;
 public class ReaderTest extends TestCase {
 	@Test
 	public void testReader() throws IOException {
-		String path = "D:/Utilisateur/Victor/Bureau/Projet Haute performance/Tests/Q1BigTest/posts.dat";
+		String path = "D:/Utilisateur/Victor/Bureau/Projet Haute performance/Tests/Q1BigTest/";
+		String path1 = "D:/Utilisateur/Victor/Bureau/Projet Haute performance/Tests/Q1BigTest/posts.dat";
+		String path2 = "D:/Utilisateur/Victor/Bureau/Projet Haute performance/Tests/Q1BigTest/comments.dat";
 
 		Reader inputFile = new Reader(path);
 
-		ArrayList<String[]> tempList = inputFile.getList();
+		String[] tempListComment = null;
+		String[] tempListPost = null;
 
-		FileReader file = new FileReader(new File(path));
+
+		FileReader file = new FileReader(new File(path1));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
-		int i = 0;
-		while ((temp = br.readLine()) != null) {
-			String[] result = tempList.get(i);
-			String finale = Arrays.toString(result).replace(", ", "|").replaceAll("[\\[\\]]", "");
+		temp = br.readLine();
+		while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null)) {
+			//System.out.println("temp : " +temp);
 
+			tempListPost = inputFile.readLinePosts();
+			String finale = Arrays.toString(tempListPost).replace(", ", "|").replaceAll("[\\[\\]]", "");
+			//System.out.println("finale " +finale);
 			// On vérifie que les lignes soient les mêmes
 			assertEquals(temp, finale);
 
 			// On vérifie que le nombre de champ est bien égal
-			assertEquals(5, result.length);
+			//assertEquals(5, tempListPost.length);
 
-			i++;
+			temp = br.readLine();
 		}
-		br.close();
 
+		br.close();
+		inputFile.closePosts();
+		FileReader file2 = new FileReader(new File(path2));
+		BufferedReader br2 = new BufferedReader(file2);
+
+		temp = null;
+		temp = br2.readLine();
+		while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null)) {
+			//System.out.println("temp comment: " +temp);
+			
+			
+			tempListComment = inputFile.readLineComments();
+			String finale = Arrays.toString(tempListComment).replace(", ", "|").replaceAll("[\\[\\]]", "");
+			//System.out.println("finale comment " +finale );
+			// On vérifie que les lignes soient les mêmes
+			assertEquals(temp, finale);
+
+			// On vérifie que le nombre de champ est bien égal
+			//assertEquals(5, tempListPost.length);
+
+			temp = br2.readLine();
+		}
+		br2.close();
+		inputFile.closeComments();
 		// On vérifie que le fichier est bien un posts
-		assertEquals(true, inputFile.getPost());
+		//assertEquals(true, inputFile.getPost());
 
 	}
 
