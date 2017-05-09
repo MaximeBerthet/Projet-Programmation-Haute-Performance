@@ -29,47 +29,39 @@ public class ReaderTest extends TestCase {
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
 		temp = br.readLine();
-		while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null)) {
-			//System.out.println("temp : " +temp);
-
-			tempListPost = inputFile.readLinePosts();
+		tempListPost = inputFile.readLinePosts();
+		while (tempListPost[0]!=null) {
 			String finale = Arrays.toString(tempListPost).replace(", ", "|").replaceAll("[\\[\\]]", "");
 			//System.out.println("finale " +finale);
+
 			// On vérifie que les lignes soient les mêmes
 			assertEquals(temp, finale);
 
-			// On vérifie que le nombre de champ est bien égal
-			//assertEquals(5, tempListPost.length);
-
+			tempListPost = inputFile.readLinePosts();
 			temp = br.readLine();
 		}
 
 		br.close();
-		inputFile.closePosts();
+	
+		
 		FileReader file2 = new FileReader(new File(path2));
 		BufferedReader br2 = new BufferedReader(file2);
-
 		temp = null;
+		tempListComment = inputFile.readLineComments();
 		temp = br2.readLine();
-		while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null)) {
-			//System.out.println("temp comment: " +temp);
-			
-			
-			tempListComment = inputFile.readLineComments();
+		while (tempListComment[0]!=null) {			
 			String finale = Arrays.toString(tempListComment).replace(", ", "|").replaceAll("[\\[\\]]", "");
 			//System.out.println("finale comment " +finale );
+
+
 			// On vérifie que les lignes soient les mêmes
 			assertEquals(temp, finale);
 
-			// On vérifie que le nombre de champ est bien égal
-			//assertEquals(5, tempListPost.length);
-
 			temp = br2.readLine();
+			tempListComment = inputFile.readLineComments();
 		}
 		br2.close();
-		inputFile.closeComments();
-		// On vérifie que le fichier est bien un posts
-		//assertEquals(true, inputFile.getPost());
+
 
 	}
 

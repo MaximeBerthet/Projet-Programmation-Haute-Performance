@@ -22,8 +22,8 @@ public class Reader {
 	FileReader fileComments;
 	BufferedReader brPosts;
 	BufferedReader brComments;
-	String[] elementPosts = new String[5];
-	String[] elementComments = new String[7];
+	String[] elementPosts;
+	String[] elementComments;
 
 	public Reader(String path){
 		String pathPosts=path.concat("posts.dat");
@@ -41,6 +41,7 @@ public class Reader {
 	public String[] readLinePosts(){
 
 		String tempPosts = "";
+		elementPosts = new String[5];
 		try {
 			tempPosts = brPosts.readLine();
 
@@ -51,6 +52,8 @@ public class Reader {
 
 		if (tempPosts != null && tempPosts!="" && !tempPosts.equals("") && !tempPosts.equals(null)) {
 			elementPosts = tempPosts.split("[\\|]");			
+		}else{
+			closePosts();
 		}
 		return elementPosts;
 	}
@@ -59,6 +62,8 @@ public class Reader {
 
 		String tempComments = null;
 		String[] tempElements = null;
+		elementComments = new String[7];
+
 		try {
 			tempComments = brComments.readLine();
 		} catch (IOException e) {
@@ -67,14 +72,17 @@ public class Reader {
 		}
 		if (tempComments != null && tempComments!="" && !tempComments.equals("") && !tempComments.equals(null)) {
 			tempElements = tempComments.split("[\\|]");
-		}
-		for (int i = 0; i < tempElements.length; i++) {
-			elementComments[i] = tempElements[i];
-		}
-		if (tempElements.length<elementComments.length){
-			for (int i = tempElements.length; i < elementComments.length; i++) {
-				elementComments[i] = "";
+
+			for (int i = 0; i < tempElements.length; i++) {
+				elementComments[i] = tempElements[i];
 			}
+			if (tempElements.length<elementComments.length){
+				for (int i = tempElements.length; i < elementComments.length; i++) {
+					elementComments[i] = "";
+				}
+			}
+		}else{
+			closeComments();
 		}
 		return elementComments;
 
