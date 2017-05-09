@@ -9,54 +9,46 @@ import java.util.*;
 public class Reader {
 
 	private ArrayList<String[]> list = null;
-	private int PostOrComment = 0; // 1 for posts, 2 for comments
+	private boolean Post = false; // true for posts, false for comments
 
 	public Reader(String path) throws IOException {
 		String type = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase();
+		FileReader file = new FileReader(new File(path));
+		BufferedReader br = new BufferedReader(file);
+		String temp = "";
+		list = new ArrayList<String[]>();
 
 		if (type.equals("posts")) {
-			setPostOrComment(1);
-			FileReader file = new FileReader(new File(path));
-			BufferedReader br = new BufferedReader(file);
-			String temp = null;
-
+			setPost(true);
 			// Define ArrayList
-			list = new ArrayList<String[]>();
-			while ((temp = br.readLine()) != null) {
+			temp = br.readLine();
+			while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null) ) {
 				String[] elements = temp.split("[\\|]");
 				list.add(elements);
+				temp = br.readLine();
 			}
-			br.close();
+
 		} else if (type.equals("comments")) {
-			setPostOrComment(2);
-			FileReader file = new FileReader(new File(path));
-			BufferedReader br = new BufferedReader(file);
-			String temp = null;
-
+			setPost(false);
 			// Define ArrayList
-			list = new ArrayList<String[]>();
-			while ((temp = br.readLine()) != null) {
-				String[] elements = new String[7];
-				String[] tempElements = temp.split("[\\|]");
-
-				for (int i = 0; i < tempElements.length; i++) {
-					elements[i] = tempElements[i];
-				}
+			temp = br.readLine();
+			while (temp != null && temp!="" && !temp.equals("") && !temp.equals(null) ) {
+				String[] elements = temp.split("[\\|]");
 				list.add(elements);
+				temp = br.readLine();
 			}
-			br.close();
 		} else {
 			System.out.println("Wrong file");
 		}
-
+		br.close();
 	}
 
-	public int getPostOrComment() {
-		return PostOrComment;
+	public boolean getPost() {
+		return Post;
 	}
 
-	public void setPostOrComment(int postOrComment) {
-		PostOrComment = postOrComment;
+	public void setPost(boolean Post) {
+		this.Post = Post;
 	}
 
 	public ArrayList<String[]> getList() {

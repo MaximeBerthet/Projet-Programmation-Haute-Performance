@@ -63,134 +63,138 @@ public class Scores {
 	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());;
 
-	public Scores() {
-		super();
-	}
+			public Scores() {
+				super();
+			}
 
-	public void processFile(ArrayList<String[]> file, boolean post) {
-		if (post) {
-			openPost(file);
-		} else {
-			openComment(file);
-		}
-		calcul();
-	}
-
-	private static void openPost(ArrayList<String[]> file) {
-		Iterator<String[]> it = file.iterator();
-
-		while (it.hasNext()) {
-			String[] line = (String[]) it.next();
-
-			postsScores.add(10);
-			postsIds.add(Integer.parseInt(line[1]));
-			postsNbComments.add(0);
-			postsStartDates.add(formatter.parseDateTime(line[0]));
-			postsAuthors.add(line[4]);
-
-		}
-	}
-
-	private static void openComment(ArrayList<String[]> file) {
-		Iterator<String[]> it = file.iterator();
-
-		while (it.hasNext()) {
-			String[] line = (String[]) it.next();
-			int linkId = -1;
-			int size = commentsScores.size();
-
-			// The comment is linked to a post
-			if (line[5] == "") {
-				linkId = Integer.parseInt(line[6]);
-				int i = 0;
-				int id = postsIds.get(i);
-				while (id != linkId && i < size) {
-					id = postsIds.get(i);
-					i++;
+			public void processFile(ArrayList<String[]> file, boolean post) {
+				if (post) {
+					openPost(file);
+				} else {
+					openComment(file);
 				}
-				if (id == linkId) {
-					commentsScores.add(10);
-					commentsIds.add(Integer.parseInt(line[1]));
-					commentsLinkedIds.add(linkId);
-					commentsStartDates.add(formatter.parseDateTime(line[0]));
+				calcul();
+			}
 
-					// Increment the counter of comments
-					postsNbComments.set(i, postsNbComments.get(i) + 1);
-				}
+			private static void openPost(ArrayList<String[]> file) {
+				Iterator<String[]> it = file.iterator();
 
-			} else { // The comment is linked to another comment
-				int i = 0;
+				while (it.hasNext()) {
+					String[] line = (String[]) it.next();
 
-				// We link the comment to a post.
-				while (linkId != commentsIds.get(i) && i < size) {
-					i++;
-				}
+					postsScores.add(10);
+					postsIds.add(Integer.parseInt(line[1]));
+					postsNbComments.add(0);
+					postsStartDates.add(formatter.parseDateTime(line[0]));
+					postsAuthors.add(line[4]);
 
-				// Verify if the link exists
-				if (linkId == commentsIds.get(i)) {
-					commentsScores.add(10);
-					commentsIds.add(Integer.parseInt(line[1]));
-					commentsStartDates.add(formatter.parseDateTime(line[0]));
-					linkId = Integer.parseInt(line[5]);
-					linkId = commentsLinkedIds.get(i);
-					commentsLinkedIds.add(commentsLinkedIds.get(i));
-
-					// Increment the counter of comments
-					i = 0;
-					int id = postsIds.get(i);
-					while (id != linkId && i < size) {
-						id = postsIds.get(i);
-						i++;
-					}
-					postsNbComments.set(i, postsNbComments.get(i) + 1);
 				}
 			}
 
-		}
-	}
+			private static void openComment(ArrayList<String[]> file) {
+				Iterator<String[]> it = file.iterator();
 
-	public void calcul() {
-		if (commentsStartDates.size() > 0) {
-			if (postsStartDates.get(postsStartDates.size() - 1)
-					.isAfter(commentsStartDates.get(commentsStartDates.size() - 1))) {
-				for (int i = 0; i < postsScores.size(); i++) {
-					postsScores.set(i, 10
-							+ Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
+				while (it.hasNext() ) {
+					String[] line = (String[]) it.next();
+					int linkId = -1;
+					int size = commentsScores.size();
+					// The comment is linked to a post
+					if (line[5].equals("")||line[5].equals(null)) {
+						linkId = Integer.parseInt(line[6]);
+						int i = 0;
+						int id = postsIds.get(i);
+						while (id != linkId && i < size) {
+							id = postsIds.get(i);
+							i++;
+						}
+						if (id == linkId) {
+							commentsScores.add(10);
+							commentsIds.add(Integer.parseInt(line[1]));
+							commentsLinkedIds.add(linkId);
+							commentsStartDates.add(formatter.parseDateTime(line[0]));
+
+							// Increment the counter of comments
+							postsNbComments.set(i, postsNbComments.get(i) + 1);
+						}
+
+					} else { // The comment is linked to another comment
+						int i = 0;
+
+						// We link the comment to a post.
+						while (i < size) {
+							linkId = Integer.parseInt(line[5]);
+							if (linkId != commentsIds.get(i)) {
+
+							}else{
+								commentsScores.add(10);
+								commentsIds.add(Integer.parseInt(line[1]));
+								commentsStartDates.add(formatter.parseDateTime(line[0]));
+								
+								linkId = commentsLinkedIds.get(i);
+								commentsLinkedIds.add(commentsLinkedIds.get(i));
+
+								// Increment the counter of comments
+								int j = 0;
+								int id = postsIds.get(j);
+								while (id != linkId && j < size) {
+									id = postsIds.get(j);
+									j++;
+								}
+								postsNbComments.set(j, postsNbComments.get(j) + 1);
+								i=size;
+								
+							}
+							i++;
+						}
+
+
+					}
+
+				}
+			}
+
+			public void calcul() {
+				if (commentsStartDates.size() > 0) {
+					if (postsStartDates.get(postsStartDates.size() - 1)
+							.isAfter(commentsStartDates.get(commentsStartDates.size() - 1))) {
+						for (int i = 0; i < postsScores.size(); i++) {
+							postsScores.set(i, 10
+									+ Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
 									.getDays());
-				}
-				for (int i = 0; i < commentsScores.size(); i++) {
-					commentsScores.set(i, 10 + Days
-							.daysBetween(postsStartDates.get(postsStartDates.size() - 1), commentsStartDates.get(i))
+						}
+						for (int i = 0; i < commentsScores.size(); i++) {
+							commentsScores.set(i, 10 + Days
+									.daysBetween(postsStartDates.get(postsStartDates.size() - 1), commentsStartDates.get(i))
 							.getDays());
-				}
+						}
 
-			} else {
+					} else {
 
-				for (int i = 0; i < postsScores.size(); i++) {
-					postsScores.set(i, 10 + Days
-							.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1), postsStartDates.get(i))
+						for (int i = 0; i < postsScores.size(); i++) {
+							postsScores.set(i, 10 + Days
+									.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1), postsStartDates.get(i))
 							.getDays());
-				}
-				for (int i = 0; i < commentsScores.size(); i++) {
-					commentsScores.set(i, 10 + Days.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1),
-							commentsStartDates.get(i)).getDays());
-				}
-			}
-			for (int i = 0; i < postsScores.size(); i++) {
-				for (int j = 0; j < commentsScores.size(); j++) {
+						}
+						for (int i = 0; i < commentsScores.size(); i++) {
+							commentsScores.set(i, 10 + Days.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1),
+									commentsStartDates.get(i)).getDays());
+						}
+					}
+					for (int i = 0; i < postsScores.size(); i++) {
+						for (int j = 0; j < commentsScores.size(); j++) {
 
-					if (commentsLinkedIds.get(j).equals(postsIds.get(i))) {
-						postsScores.set(i, postsScores.get(i) + commentsScores.get(j));
+							if (commentsLinkedIds.get(j).equals(postsIds.get(i))) {
+								postsScores.set(i, postsScores.get(i) + commentsScores.get(j));
+							}
+						}
+					}
+				} else {
+					for (int i = 0; i < postsScores.size(); i++) {
+						postsScores.set(i,
+								10 + Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
+								.getDays());
 					}
 				}
 			}
-		} else {
-			for (int i = 0; i < postsScores.size(); i++) {
-				postsScores.set(i,
-						10 + Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
-								.getDays());
-			}
-		}
-	}
 
 }

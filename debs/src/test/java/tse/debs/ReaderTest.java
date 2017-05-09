@@ -40,7 +40,7 @@ public class ReaderTest extends TestCase {
 		br.close();
 
 		// On vérifie que le fichier est bien un posts
-		assertEquals(1, inputFile.getPostOrComment());
+		assertEquals(true, inputFile.getPost());
 
 	}
 

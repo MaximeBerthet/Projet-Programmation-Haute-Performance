@@ -11,7 +11,7 @@ public class Tri {
 	public int[] Trier(ArrayList<Integer> tab){
 		for ( int j=0; j<L.length;j++)
 		{
-			L[j]=0;
+			L[j]=-1;
 		}
 		int M1=0;
 		int M2=0;
