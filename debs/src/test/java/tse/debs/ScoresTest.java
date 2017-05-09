@@ -37,8 +37,11 @@ public class ScoresTest {
 		postsScores.add(3);
 		postsScores.add(4);
 		postsScores.add(10);
-
-		scores.processFile(postFile, true);
+		
+		for (int i=0; i<postFile.size(); i++){			
+			scores.openPost(postFile.get(i));
+		}
+		scores.calcul();
 		
 		//System.out.print(scores.getPostsStartDates());
 		//System.out.print(scores.getPostsScores());
@@ -49,7 +52,10 @@ public class ScoresTest {
 		String[] commentLine1 = { "2010-02-10T04:05:20.777+0000", "529590", "2886", "LOL", "Baoping Wu", "",
 				"1039993" };
 		commentFile.add(commentLine1);
-		scores.processFile(commentFile, false);
+		for (int i = 0; i<commentFile.size(); i++){			
+			scores.openComment(commentFile.get(i));
+		}
+		scores.calcul();
 		
 		assertTrue("add multiple files", ids.equals(scores.getPostsIds()));
 		
