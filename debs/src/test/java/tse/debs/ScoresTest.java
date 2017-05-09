@@ -62,10 +62,16 @@ public class ScoresTest {
 		assertTrue("commentsIdsLinked match",commentFileLinkedId.equals(scores.getCommentsLinkedIds()));
 		
 		postsScores = new ArrayList<Integer>();
-		postsScores.add(2);
+		postsScores.add(12);
 		postsScores.add(3);
 		postsScores.add(9);
 
+		//System.out.print(scores.getPostsScores());
+		
 		assertTrue("scores", postsScores.equals(scores.getPostsScores()));
+		assertTrue("ids match", scores.getPostsIds().get(0).equals(scores.getCommentsLinkedIds().get(0)));
+		assertTrue("nbComments", scores.getPostsNbComments().get(0) == 1);
+		//System.out.println(scores.getPostsIds().get(0));
+		//System.out.println(scores.getCommentsLinkedIds().get(0));
 	}
 }

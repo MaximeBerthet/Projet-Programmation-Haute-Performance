@@ -96,33 +96,56 @@ public class Scores {
 
 		while (it.hasNext()) {
 			String[] line = (String[]) it.next();
+			int linkId = -1;
+			int size = commentsScores.size();
 
 			// The comment is linked to a post
 			if (line[5] == "") {
-				commentsScores.add(10);
-				commentsIds.add(Integer.parseInt(line[1]));
-				commentsLinkedIds.add(Integer.parseInt(line[6]));
-				commentsStartDates.add(formatter.parseDateTime(line[0]));
-
-			} else { // The comment is linked to another comment
-				int size = commentsScores.size();
+				linkId = Integer.parseInt(line[6]);
 				int i = 0;
-				commentsScores.add(10);
-				commentsIds.add(Integer.parseInt(line[1]));
-				commentsStartDates.add(formatter.parseDateTime(line[0]));
-				int linkId = Integer.parseInt(line[5]);
-				boolean validLink = false;
-				while (!validLink && i < size) {
-					if (linkId == commentsIds.get(i)) {
-						commentsLinkedIds.add(commentsLinkedIds.get(i));
-						validLink = true;
-					}
+				int id = postsIds.get(i);
+				while (id != linkId && i < size) {
+					id = postsIds.get(i);
 					i++;
 				}
-				if (!validLink) {
-					commentsLinkedIds.add(-1); // Invalid link
+				if (id == linkId) {
+					commentsScores.add(10);
+					commentsIds.add(Integer.parseInt(line[1]));
+					commentsLinkedIds.add(linkId);
+					commentsStartDates.add(formatter.parseDateTime(line[0]));
+
+					// Increment the counter of comments
+					postsNbComments.set(i, postsNbComments.get(i) + 1);
+				}
+
+			} else { // The comment is linked to another comment
+				int i = 0;
+
+				// We link the comment to a post.
+				while (linkId != commentsIds.get(i) && i < size) {
+					i++;
+				}
+
+				// Verify if the link exists
+				if (linkId == commentsIds.get(i)) {
+					commentsScores.add(10);
+					commentsIds.add(Integer.parseInt(line[1]));
+					commentsStartDates.add(formatter.parseDateTime(line[0]));
+					linkId = Integer.parseInt(line[5]);
+					linkId = commentsLinkedIds.get(i);
+					commentsLinkedIds.add(commentsLinkedIds.get(i));
+
+					// Increment the counter of comments
+					i = 0;
+					int id = postsIds.get(i);
+					while (id != linkId && i < size) {
+						id = postsIds.get(i);
+						i++;
+					}
+					postsNbComments.set(i, postsNbComments.get(i) + 1);
 				}
 			}
+
 		}
 	}
 
@@ -142,28 +165,29 @@ public class Scores {
 				}
 
 			} else {
+
 				for (int i = 0; i < postsScores.size(); i++) {
 					postsScores.set(i, 10 + Days
 							.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1), postsStartDates.get(i))
 							.getDays());
 				}
 				for (int i = 0; i < commentsScores.size(); i++) {
-					commentsScores.set(i, 10 + Days
-							.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1), postsStartDates.get(i))
-							.getDays());
+					commentsScores.set(i, 10 + Days.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1),
+							commentsStartDates.get(i)).getDays());
 				}
 			}
 			for (int i = 0; i < postsScores.size(); i++) {
 				for (int j = 0; j < commentsScores.size(); j++) {
-					if (commentsLinkedIds.get(j) == postsIds.get(i)) {
+
+					if (commentsLinkedIds.get(j).equals(postsIds.get(i))) {
 						postsScores.set(i, postsScores.get(i) + commentsScores.get(j));
 					}
 				}
 			}
 		} else {
 			for (int i = 0; i < postsScores.size(); i++) {
-				postsScores.set(i, 10
-						+ Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
+				postsScores.set(i,
+						10 + Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
 								.getDays());
 			}
 		}
