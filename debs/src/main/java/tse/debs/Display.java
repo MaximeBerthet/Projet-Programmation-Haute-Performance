@@ -17,7 +17,7 @@ public class Display {
 		FileHandler fh;
 		try {
 			// This block configure the logger with handler and formatter
-			fh = new FileHandler((System.getProperty("user.home") + "/Desktop/MyLog.txt").toString(),true);
+			fh = new FileHandler("../MyLog.txt",true);
 			fh.setFormatter(new Formatter() {
 				public String format(LogRecord record) {//if(record.getLevel() == Level.INFO){
 					return record.getMessage() + "\r\n";
