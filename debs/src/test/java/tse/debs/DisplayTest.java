@@ -18,12 +18,12 @@ import org.junit.Test;
 public class DisplayTest {
 	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
-		
-	
 	@Test
 	public void test() {
 		Scores s=new Scores();
-		Display d=new Display(s);
+		
+		Display d=new Display(s,"test");	
+		d.resetLogs();
 		ArrayList<DateTime> dates = new ArrayList<DateTime>(Arrays.asList(formatter.parseDateTime("2010-02-01T05:12:32.921+0000"),formatter.parseDateTime("2010-02-02T19:53:43.226+0000"),formatter.parseDateTime("2010-02-09T04:05:10.421+0000")));
 		ArrayList<Integer> postsId=new ArrayList<Integer>(Arrays.asList(1039993, 299101, 529360));
 		ArrayList<String> authors= new ArrayList<String>(Arrays.asList("Lei Liu","Michael Wang","Wei Zhu"));
@@ -49,6 +49,8 @@ public class DisplayTest {
 		expected="2010-02-09T04:05:10.421+0000,529360,Wei Zhu,8,0,299101,Michael Wang,9,0,1039993,Lei Liu,10,0";
 		line=Display.lineDisplayTest(dates, postsId, authors, postsScores, postsNbComments,indexOfBest);
 		assertTrue(line.equals(expected));
+
+
 	}
 
 }
