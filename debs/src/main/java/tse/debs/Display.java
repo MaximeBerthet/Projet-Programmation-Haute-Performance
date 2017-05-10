@@ -46,9 +46,9 @@ public class Display {
 		}
 	}
 
-	public void addLine(int[] indexOfBest) {
+	public void addLine(int[] indexOfBest, DateTime date) {
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));    
-		String line = sdf.format((scores.getPostsStartDates().get(scores.getPostsStartDates().size() - 1)).toDate()).toString();
+		String line = sdf.format(date.toDate()).toString();
 		int i = 0;
 		while (i < 3) {
 			if (indexOfBest[i] != -1) {

@@ -2,8 +2,12 @@ package tse.debs;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
@@ -19,7 +23,7 @@ public class mainTest {
 
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
 	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	static String folderName = "Q1PostExpiredComment";
+	static String folderName = "Q1BigTest";
 	static String path = mainPath + "/" + folderName + "/";
 
 	static Reader reader = new Reader(path);
@@ -31,11 +35,13 @@ public class mainTest {
 
 	static Display display = new Display(scores, folderName);
 
+	static DateTime date = null;
+
 	@Test
 	public void test() throws IOException {
-		
+
 		display.resetLogs();
-		
+
 		String[] linePost = reader.readLinePosts();
 		String[] lineComment = reader.readLineComments();
 
@@ -49,11 +55,15 @@ public class mainTest {
 					dateComment = formatter.parseDateTime(lineComment[0]);
 					scores.calcul(dateComment);
 					lineComment = reader.readLineComments();
+					date = dateComment;
+
 				} else {
 					scores.openPost(linePost);
 					datePost = formatter.parseDateTime(linePost[0]);
 					scores.calcul(datePost);
 					linePost = reader.readLinePosts();
+					date = datePost;
+
 				}
 
 			} else {
@@ -63,18 +73,39 @@ public class mainTest {
 					scores.openComment(lineComment);
 					scores.calcul(dateComment);
 					lineComment = reader.readLineComments();
+					date = dateComment;
+
 				} else {
 					scores.openPost(linePost);
 					scores.calcul(datePost);
 					linePost = reader.readLinePosts();
-
+					date = datePost;
 				}
 			}
 
 			bestScores = tri.Trier(Scores.getPostsScores());
-			display.addLine(bestScores);
+			display.addLine(bestScores, date);
 		}
 
+		FileReader file = new FileReader(new File("../" + folderName + ".txt"));
+		BufferedReader br = new BufferedReader(file);
+		String temp = null;
+		temp = br.readLine();
+
+		FileReader fileExpected = new FileReader(new File(path + "_expectedQ1.txt"));
+		BufferedReader brExpected = new BufferedReader(fileExpected);
+		String tempExpected = null;
+		tempExpected = brExpected.readLine();
+
+		while (tempExpected != null || temp != null /* && temp != "" */) {
+			assertEquals(tempExpected, temp);
+
+			tempExpected = brExpected.readLine();
+			temp = br.readLine();
+		}
+
+		br.close();
+		brExpected.close();
 		// fail("Not yet implemented");
 	}
 

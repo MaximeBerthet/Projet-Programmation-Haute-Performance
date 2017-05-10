@@ -194,12 +194,22 @@ public class Scores {
 	public void calcul(DateTime date) {
 
 		for (int i = 0; i < postsScores.size(); i++) {
-			postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
+			if (date.isBefore(postsStartDates.get(i).plusDays(10))) {
+				postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
+			} else {
+				postsScores.set(i, 0);
+			}
+
 		}
 		for (int i = 0; i < postsScores.size(); i++) {
 			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
-				postsCommentsScores.get(i).set(j,
-						10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
+				if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
+					postsCommentsScores.get(i).set(j,
+							10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
+				} else if (postsCommentsScores.get(i).get(j) != 0) {
+					postsCommentsScores.get(i).set(j, 0);
+					postsNbComments.set(i, postsNbComments.get(i) - 1);
+				}
 			}
 		}
 		for (int i = 0; i < postsScores.size(); i++) {
@@ -219,8 +229,6 @@ public class Scores {
 	}
 
 	public static void deletePost(int i) {
-		int id = postsIds.get(i);
-
 		// Delete the post
 		postsScores.remove(i);
 		postsIds.remove(i);
