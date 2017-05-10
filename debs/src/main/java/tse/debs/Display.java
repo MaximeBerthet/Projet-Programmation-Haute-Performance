@@ -8,62 +8,68 @@ import org.joda.time.DateTime;
 
 public class Display {
 
-	ArrayList<Integer> postsScores = new ArrayList<Integer>();
-	ArrayList<Integer> postsnbComments = new ArrayList<Integer>();
-	ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
-	ArrayList<String> postsAuthors = new ArrayList<String>();
-	ArrayList<Integer> postsId = new ArrayList<Integer>();
-	int[] indexOfBest;
+	static Scores scores;
+	static Logger logger;
 
-
-	public Display(ArrayList<Integer> postsScores, ArrayList<Integer> postsnbComments,
-			ArrayList<DateTime> postsStartDates, ArrayList<String> postsAuthors, ArrayList<Integer> postsId, int[] indexOfBest) {
-		this.postsScores = postsScores;
-		this.postsnbComments = postsnbComments;
-		this.postsStartDates = postsStartDates;
-		this.postsAuthors = postsAuthors;
-		this.postsId = postsId;
-		this.indexOfBest = indexOfBest;
+	public Display(Scores scores) {
+		this.scores = scores;
 
 		FileHandler fh;
-		Logger logger = Logger.getLogger("Mylog");
 		try {
-
 			// This block configure the logger with handler and formatter
-			fh = new FileHandler("../Mylog.txt");
+			fh = new FileHandler((System.getProperty("user.home") + "/Desktop/MyLog.txt").toString(),true);
+			fh.setFormatter(new Formatter() {
+				public String format(LogRecord record) {//if(record.getLevel() == Level.INFO){
+					return record.getMessage() + "\r\n";
+				}
+			});
+			logger = Logger.getLogger("Mylog");
+			logger.setUseParentHandlers(false);
 			logger.addHandler(fh);
-			SimpleFormatter formatter = new SimpleFormatter();
-
-			fh.setFormatter(formatter);
-
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void addLine(int[] indexOfBest) {
+		String line = scores.getPostsStartDates().get(scores.getPostsStartDates().size() - 1).toString();
 		int i = 0;
-		
-		String toDisplay = postsStartDates.get(postsStartDates.size()-1).toString();
-		while (i<3) {
-			if(indexOfBest[i] != -1){
-				System.out.println("i = "+i);
-				toDisplay=toDisplay.concat(("," + postsId.get(indexOfBest[i]).toString() + "," + postsAuthors.get(indexOfBest[i]).toString() + ","
-						+ postsScores.get(indexOfBest[i]).toString() + "," + postsnbComments.get(indexOfBest[i])).toString());
-				
-			}else{
-	
-					toDisplay=toDisplay.concat(",-,-,-,-");
-	
+		while (i < 3) {
+			if (indexOfBest[i] != -1) {
+				//System.out.println("i = " + i);
+				line = line.concat(("," + scores.getPostsIds().get(indexOfBest[i]).toString() + ","
+						+ scores.getPostsAuthors().get(indexOfBest[i]).toString() + ","
+						+ scores.getPostsScores().get(indexOfBest[i]).toString() + ","
+						+ scores.getPostsNbComments().get(indexOfBest[i])).toString());
+			} else {
+				line = line.concat(",-,-,-,-");
 			}
 			i++;
 		}
-	
-		System.out.println("test    "+toDisplay);
-		logger.info(toDisplay);
-
+		logger.info(line);
 	}
 
-	public void Logger() {
 
+	public static String lineDisplayTest(ArrayList<DateTime> dates,ArrayList<Integer> postsId,ArrayList<String> authors,ArrayList<Integer> postsScores,ArrayList<Integer> postsNbComments,int[] indexOfBest){
+		String line = dates.get(dates.size() - 1).toString();
+		int i = 0;
+		while (i < 3) {
+			if (indexOfBest[i] != -1) {
+				//System.out.println("i = " + i);
+				line = line.concat(("," + postsId.get(indexOfBest[i]).toString() + ","
+						+ authors.get(indexOfBest[i]).toString() + ","
+						+ postsScores.get(indexOfBest[i]).toString() + ","
+						+ postsNbComments.get(indexOfBest[i])).toString());
+			} else {
+
+				line = line.concat(",-,-,-,-");
+
+			}
+			i++;
+		}
+		logger.info(line);
+		return line;
 	}
 }
