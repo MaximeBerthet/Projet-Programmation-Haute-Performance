@@ -1,7 +1,6 @@
 package tse.debs;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
@@ -16,14 +15,20 @@ public class Scores {
 	static ArrayList<Integer> postsScores = new ArrayList<Integer>();
 	static ArrayList<Integer> postsIds = new ArrayList<Integer>();
 	static ArrayList<Integer> postsNbComments = new ArrayList<Integer>();
-	static ArrayList<Integer> postsNbOtherComments = new ArrayList<Integer>();
 	static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
+	static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
 	static ArrayList<String> postsAuthors = new ArrayList<String>();
 
-	static ArrayList<Integer> commentsScores = new ArrayList<Integer>();
-	static ArrayList<Integer> commentsIds = new ArrayList<Integer>();
-	static ArrayList<Integer> commentsLinkedIds = new ArrayList<Integer>();
-	static ArrayList<DateTime> commentsStartDates = new ArrayList<DateTime>();
+	static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> postsCommentsIds = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
+
+	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
+
+	public Scores() {
+		super();
+	}
 
 	public static ArrayList<Integer> getPostsScores() {
 		return postsScores;
@@ -37,10 +42,6 @@ public class Scores {
 		return postsNbComments;
 	}
 
-	public static ArrayList<Integer> getPostsNbAllComments() {
-		return postsNbOtherComments;
-	}
-
 	public static ArrayList<DateTime> getPostsStartDates() {
 		return postsStartDates;
 	}
@@ -49,140 +50,175 @@ public class Scores {
 		return postsAuthors;
 	}
 
-	public static ArrayList<Integer> getCommentsScores() {
-		return commentsScores;
+	public static ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
+		return postsCommentsScores;
 	}
 
-	public static ArrayList<Integer> getCommentsIds() {
-		return commentsIds;
+	public static ArrayList<ArrayList<Integer>> getPostsCommentsIds() {
+		return postsCommentsIds;
 	}
 
-	public static ArrayList<Integer> getCommentsLinkedIds() {
-		return commentsLinkedIds;
+	public static ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
+		return postsCommentsStartDates;
 	}
 
-	public static ArrayList<DateTime> getCommentsStartDates() {
-		return commentsStartDates;
-	}
-
-	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
-			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());;
-
-	public Scores() {
-		super();
-	}
-
-	public static void openPost(String[] file) {
+	public static void openPost(String[] line) {
 		postsScores.add(10);
-		postsIds.add(Integer.parseInt(file[1]));
+		postsIds.add(Integer.parseInt(line[1]));
 		postsNbComments.add(0);
-		postsStartDates.add(formatter.parseDateTime(file[0]));
-		postsAuthors.add(file[4]);
+		postsStartDates.add(formatter.parseDateTime(line[0]));
+		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10));
+		postsAuthors.add(line[4]);
 
+		postsCommentsScores.add(new ArrayList<Integer>());
+		postsCommentsIds.add(new ArrayList<Integer>());
+		postsCommentsStartDates.add(new ArrayList<DateTime>());
 	}
 
-	public static void openComment(String[] file) {
+	public static void openComment(String[] line) {
 		int linkId = -1;
-		int size = commentsScores.size();
+		// int size = commentsScores.size();
+		int size = postsIds.size();
 
 		// The comment is linked to a post
-		if (file[5].equals("")) {
-			linkId = Integer.parseInt(file[6]);
-			int i = 0;
-			int id = postsIds.get(i);
-
-			while (id != linkId && i < size) {
-				id = postsIds.get(i);
-				i++;
-			}
-
-			if (id == linkId) {
-				commentsScores.add(10);
-				commentsIds.add(Integer.parseInt(file[1]));
-				commentsLinkedIds.add(linkId);
-				commentsStartDates.add(formatter.parseDateTime(file[0]));
-
-				// Increment the counter of comments
-				postsNbComments.set(i, postsNbComments.get(i) + 1);
-			}
-
-		} else { // The comment is linked to another comment
+		if (line[5].equals("")) {
+			linkId = Integer.parseInt(line[6]);
+			int id = -1;
 			int i = 0;
 
-			// We link the comment to a post.
 			while (i < size) {
-				linkId = Integer.parseInt(file[5]);
+				id = postsIds.get(i);
 
-				if (linkId == commentsIds.get(i)) {
-					commentsScores.add(10);
-					commentsIds.add(Integer.parseInt(file[1]));
-					commentsStartDates.add(formatter.parseDateTime(file[0]));
-					linkId = commentsLinkedIds.get(i);
-					commentsLinkedIds.add(commentsLinkedIds.get(i));
+				if (id == linkId) {
 
-					// Increment the counter of comments
-					int j = 0;
-					int id = postsIds.get(j);
-					while (id != linkId && j < size) {
-						id = postsIds.get(j);
-						j++;
+					DateTime commentDate = formatter.parseDateTime(line[0]);
+
+					// We first verify that the post is not dead
+					if (commentDate.isAfter(postsDeathDates.get(i))) {
+						// Delete the dead post
+						deletePost(i);
+
+					} else {
+						ArrayList<Integer> scores = postsCommentsScores.get(i);
+						scores.add(10);
+						postsCommentsScores.set(i, scores);
+
+						ArrayList<Integer> ids = postsCommentsIds.get(i);
+						ids.add(Integer.parseInt(line[1]));
+						postsCommentsIds.set(i, ids);
+
+						ArrayList<DateTime> startDates = postsCommentsStartDates.get(i);
+						startDates.add(commentDate);
+						postsCommentsStartDates.set(i, startDates);
+
+						// Update the death date of the post
+						postsDeathDates.set(i, commentDate.plusDays(10));
+
+						// Increment the counter of comments
+						postsNbComments.set(i, postsNbComments.get(i) + 1);
 					}
-					postsNbOtherComments.set(j, postsNbOtherComments.get(j) + 1);
 					break;
 				}
 
 				i++;
 			}
 
-		}
+		} else { // The comment is linked to another comment
+			linkId = Integer.parseInt(line[5]);
+			int i = 0;
 
-	}
+			postsLoop: while (i < size) {
 
-	public void calcul() {
-		if (commentsStartDates.size() > 0) {
-			if (postsStartDates.get(postsStartDates.size() - 1)
-					.isAfter(commentsStartDates.get(commentsStartDates.size() - 1))) {
-				for (int i = 0; i < postsScores.size(); i++) {
-					postsScores.set(i, 10
-							+ Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
-									.getDays());
-				}
-				for (int i = 0; i < commentsScores.size(); i++) {
-					commentsScores.set(i, 10 + Days
-							.daysBetween(postsStartDates.get(postsStartDates.size() - 1), commentsStartDates.get(i))
-							.getDays());
-				}
+				ArrayList<Integer> ids = postsCommentsIds.get(i);
+				int sizeIds = ids.size();
+				int j = 0;
 
-			} else {
+				while (j < sizeIds) {
+					if (linkId == ids.get(j)) {
+						DateTime commentDate = formatter.parseDateTime(line[0]);
 
-				for (int i = 0; i < postsScores.size(); i++) {
-					postsScores.set(i, 10 + Days
-							.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1), postsStartDates.get(i))
-							.getDays());
-				}
-				for (int i = 0; i < commentsScores.size(); i++) {
-					commentsScores.set(i, 10 + Days.daysBetween(commentsStartDates.get(commentsStartDates.size() - 1),
-							commentsStartDates.get(i)).getDays());
-				}
-			}
-			for (int i = 0; i < postsScores.size(); i++) {
-				for (int j = 0; j < commentsScores.size(); j++) {
+						// We first verify that the post is not dead
+						if (commentDate.isAfter(postsDeathDates.get(i))) {
+							// Delete the dead post
+							deletePost(i);
 
-					if (commentsLinkedIds.get(j).equals(postsIds.get(i))) {
-						postsScores.set(i, postsScores.get(i) + commentsScores.get(j));
+						} else {
+							// We link the comment to a post
+
+							ArrayList<Integer> scores = postsCommentsScores.get(i);
+							scores.add(10);
+							postsCommentsScores.set(i, scores);
+
+							ids.add(Integer.parseInt(line[1]));
+							postsCommentsIds.set(i, ids);
+
+							ArrayList<DateTime> startDates = postsCommentsStartDates.get(i);
+							startDates.add(commentDate);
+							postsCommentsStartDates.set(i, startDates);
+
+							// Update the death date of the post
+							postsDeathDates.set(i, commentDate.plusDays(10));
+						}
+						break postsLoop;
 					}
+
+					j++;
 				}
+
+				i++;
 			}
-		} else {
-			for (int i = 0; i < postsScores.size(); i++) {
-				postsScores.set(i,
-						10 + Days.daysBetween(postsStartDates.get(postsStartDates.size() - 1), postsStartDates.get(i))
-								.getDays());
+
+		}
+
+	}
+
+	public void calculMax(ArrayList<Integer> max, DateTime date) {
+
+		for (int i = 0; i < max.size(); i++) {
+			postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
+		}
+		for (int i = 0; i < max.size(); i++) {
+			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
+				postsCommentsScores.get(max.get(i)).set(j,
+						10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
+			}
+		}
+		for (int i = 0; i < max.size(); i++) {
+			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
+				postsScores.set(i, postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
+			}
+		}
+
+	}
+
+	public void calcul(DateTime date) {
+
+		for (int i = 0; i < postsScores.size(); i++) {
+			postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
+		}
+		for (int i = 0; i < postsScores.size(); i++) {
+			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
+				postsCommentsScores.get(i).set(j,
+						10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
+			}
+		}
+		for (int i = 0; i < postsScores.size(); i++) {
+			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
+				postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
 			}
 		}
 	}
 
-	public void deletePost(int i) {
+	public void calculMin(ArrayList<Integer> min, DateTime date) {
+
+		for (int i = 0; i < min.size(); i++) {
+			if (date.isAfter(postsDeathDates.get(min.get(i)))) {
+				deletePost(min.get(i));
+			}
+		}
+	}
+
+	public static void deletePost(int i) {
 		int id = postsIds.get(i);
 
 		// Delete the post
@@ -193,19 +229,8 @@ public class Scores {
 		postsAuthors.remove(i);
 
 		// Delete the comments linked to the posts
-		int size = commentsScores.size();
-		int j = 0;
-
-		while (j < size) {
-			if (commentsLinkedIds.get(j) == id) {
-				commentsScores.remove(j);
-				commentsIds.remove(j);
-				commentsLinkedIds.remove(j);
-				commentsStartDates.remove(j);
-				size--;
-			}
-			j++;
-		}
+		postsCommentsScores.remove(i);
+		postsCommentsIds.remove(i);
+		postsCommentsStartDates.remove(i);
 	}
-
 }
