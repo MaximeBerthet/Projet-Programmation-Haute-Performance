@@ -1,7 +1,11 @@
 package tse.debs;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.*;
 
 import org.joda.time.DateTime;
@@ -10,6 +14,7 @@ public class Display {
 
 	static Scores scores;
 	static Logger logger;
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.FRANCE);
 
 	public Display(Scores scores) {
 		this.scores = scores;
@@ -34,7 +39,8 @@ public class Display {
 	}
 
 	public void addLine(int[] indexOfBest) {
-		String line = scores.getPostsStartDates().get(scores.getPostsStartDates().size() - 1).toString();
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));    
+		String line = sdf.format((scores.getPostsStartDates().get(scores.getPostsStartDates().size() - 1)).toDate()).toString();
 		int i = 0;
 		while (i < 3) {
 			if (indexOfBest[i] != -1) {
@@ -53,7 +59,9 @@ public class Display {
 
 
 	public static String lineDisplayTest(ArrayList<DateTime> dates,ArrayList<Integer> postsId,ArrayList<String> authors,ArrayList<Integer> postsScores,ArrayList<Integer> postsNbComments,int[] indexOfBest){
-		String line = dates.get(dates.size() - 1).toString();
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));    
+		String line = sdf.format(dates.get(dates.size() - 1).toDate()).toString();
+
 		int i = 0;
 		while (i < 3) {
 			if (indexOfBest[i] != -1) {
@@ -62,6 +70,7 @@ public class Display {
 						+ authors.get(indexOfBest[i]).toString() + ","
 						+ postsScores.get(indexOfBest[i]).toString() + ","
 						+ postsNbComments.get(indexOfBest[i])).toString());
+
 			} else {
 
 				line = line.concat(",-,-,-,-");
