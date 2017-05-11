@@ -14,7 +14,6 @@ import java.util.logging.*;
 
 import org.joda.time.DateTime;
 
-
 public class Display {
 
 	static Scores scores;
@@ -23,16 +22,25 @@ public class Display {
 	static File file;
 	static FileHandler fh;
 
-	public Display(Scores scores,String fileName) {
+	public Display(Scores scores, String fileName) {
 		this.scores = scores;
 		try {
+			File directory = new File("../../TestFiles");
+			if (!directory.exists()) {
+				if (directory.mkdir()) {
+					System.out.println("Directory is created!");
+				} else {
+					System.out.println("Failed to create directory!");
+				}
+			}
 			// This block configure the logger with handler and formatter
-			file = new File("../"+fileName+".txt");
+			file = new File("../../TestFiles/" + fileName + ".txt");
 
-			fh = new FileHandler(file.getPath(),true);
+			fh = new FileHandler(file.getPath(), true);
 
 			fh.setFormatter(new Formatter() {
-				public String format(LogRecord record) {//if(record.getLevel() == Level.INFO){
+				public String format(LogRecord record) {// if(record.getLevel()
+														// == Level.INFO){
 					return record.getMessage() + "\r\n";
 				}
 			});
@@ -47,16 +55,16 @@ public class Display {
 	}
 
 	public void addLine(int[] indexOfBest, DateTime date) {
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));    
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String line = sdf.format(date.toDate()).toString();
 		int i = 0;
 		while (i < 3) {
 			if (indexOfBest[i] != -1) {
-				//System.out.println("i = " + i);
+				// System.out.println("i = " + i);
 				line = line.concat(("," + scores.getPostsIds().get(indexOfBest[i]).toString() + ","
 						+ scores.getPostsAuthors().get(indexOfBest[i]).toString() + ","
 						+ scores.getPostsScores().get(indexOfBest[i]).toString() + ","
-						+ scores.getPostsNbComments().get(indexOfBest[i])).toString());
+						+ scores.getPostsCommentsAuthorsNb().get(indexOfBest[i])).toString());
 			} else {
 				line = line.concat(",-,-,-,-");
 			}
@@ -65,19 +73,19 @@ public class Display {
 		logger.info(line);
 	}
 
-
-	public static String lineDisplayTest(ArrayList<DateTime> dates,ArrayList<Integer> postsId,ArrayList<String> authors,ArrayList<Integer> postsScores,ArrayList<Integer> postsNbComments,int[] indexOfBest){
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));    
+	public static String lineDisplayTest(ArrayList<DateTime> dates, ArrayList<Integer> postsId,
+			ArrayList<String> authors, ArrayList<Integer> postsScores, ArrayList<Integer> postsNbComments,
+			int[] indexOfBest) {
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String line = sdf.format(dates.get(dates.size() - 1).toDate()).toString();
 
 		int i = 0;
 		while (i < 3) {
 			if (indexOfBest[i] != -1) {
-				//System.out.println("i = " + i);
+				// System.out.println("i = " + i);
 				line = line.concat(("," + postsId.get(indexOfBest[i]).toString() + ","
-						+ authors.get(indexOfBest[i]).toString() + ","
-						+ postsScores.get(indexOfBest[i]).toString() + ","
-						+ postsNbComments.get(indexOfBest[i])).toString());
+						+ authors.get(indexOfBest[i]).toString() + "," + postsScores.get(indexOfBest[i]).toString()
+						+ "," + postsNbComments.get(indexOfBest[i])).toString());
 			} else {
 				line = line.concat(",-,-,-,-");
 			}

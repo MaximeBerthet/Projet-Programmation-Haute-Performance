@@ -94,9 +94,9 @@ public class ScoresTest {
 		assertTrue("scores", postsScores.equals(scores.getPostsScores()));
 		// assertTrue("ids match",
 		// scores.getPostsIds().get(0).equals(scores.getCommentsLinkedIds().get(0)));
-		assertTrue("nbComments", scores.getPostsNbComments().get(0) == 1);
-		assertTrue("nbComments", scores.getPostsNbComments().get(1) == 0);
-		assertTrue("nbComments", scores.getPostsNbComments().get(2) == 0);
+		assertTrue("nbAuthorsComments", scores.getPostsCommentsAuthorsNb().get(0) == 1);
+		assertTrue("nbAuthorsComments", scores.getPostsCommentsAuthorsNb().get(1) == 0);
+		assertTrue("nbAuthorsComments", scores.getPostsCommentsAuthorsNb().get(2) == 0);
 		// System.out.println(scores.getPostsIds().get(0));
 		// System.out.println(scores.getCommentsLinkedIds().get(0));
 	}

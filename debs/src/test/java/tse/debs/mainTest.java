@@ -23,7 +23,7 @@ public class mainTest {
 
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
 	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	static String folderName = "Q1BigTest";
+	static String folderName = "Q1Case4";
 	static String path = mainPath + "/" + folderName + "/";
 
 	static Reader reader = new Reader(path);
@@ -41,7 +41,7 @@ public class mainTest {
 	public void test() throws IOException {
 
 		display.resetLogs();
-
+		
 		String[] linePost = reader.readLinePosts();
 		String[] lineComment = reader.readLineComments();
 
@@ -87,7 +87,7 @@ public class mainTest {
 			display.addLine(bestScores, date);
 		}
 
-		FileReader file = new FileReader(new File("../" + folderName + ".txt"));
+		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
 		temp = br.readLine();
@@ -99,7 +99,6 @@ public class mainTest {
 
 		while (tempExpected != null || temp != null /* && temp != "" */) {
 			assertEquals(tempExpected, temp);
-
 			tempExpected = brExpected.readLine();
 			temp = br.readLine();
 		}

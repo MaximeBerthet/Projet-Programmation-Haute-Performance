@@ -14,7 +14,6 @@ public class Scores {
 
 	static ArrayList<Integer> postsScores = new ArrayList<Integer>();
 	static ArrayList<Integer> postsIds = new ArrayList<Integer>();
-	static ArrayList<Integer> postsNbComments = new ArrayList<Integer>();
 	static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
 	static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
 	static ArrayList<String> postsAuthors = new ArrayList<String>();
@@ -22,6 +21,8 @@ public class Scores {
 	static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> postsCommentsIds = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
+	static ArrayList<ArrayList<Integer>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
 
 	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
@@ -38,8 +39,8 @@ public class Scores {
 		return postsIds;
 	}
 
-	public static ArrayList<Integer> getPostsNbComments() {
-		return postsNbComments;
+	public static ArrayList<Integer> getPostsCommentsAuthorsNb() {
+		return postsCommentsAuthorsNb;
 	}
 
 	public static ArrayList<DateTime> getPostsStartDates() {
@@ -62,10 +63,13 @@ public class Scores {
 		return postsCommentsStartDates;
 	}
 
+	public static ArrayList<ArrayList<Integer>> getPostsCommentsAuthorsIds() {
+		return postsCommentsAuthorsIds;
+	}
+
 	public static void openPost(String[] line) {
 		postsScores.add(10);
 		postsIds.add(Integer.parseInt(line[1]));
-		postsNbComments.add(0);
 		postsStartDates.add(formatter.parseDateTime(line[0]));
 		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10));
 		postsAuthors.add(line[4]);
@@ -73,6 +77,8 @@ public class Scores {
 		postsCommentsScores.add(new ArrayList<Integer>());
 		postsCommentsIds.add(new ArrayList<Integer>());
 		postsCommentsStartDates.add(new ArrayList<DateTime>());
+		postsCommentsAuthorsNb.add(0);
+		postsCommentsAuthorsIds.add(new ArrayList<Integer>());
 	}
 
 	public static void openComment(String[] line) {
@@ -81,7 +87,7 @@ public class Scores {
 		int size = postsIds.size();
 
 		// The comment is linked to a post
-		if (line[5].equals("")) {
+		if (line[5].equals("") || line[5].equals("-1")) {
 			linkId = Integer.parseInt(line[6]);
 			int id = -1;
 			int i = 0;
@@ -114,8 +120,18 @@ public class Scores {
 						// Update the death date of the post
 						postsDeathDates.set(i, commentDate.plusDays(10));
 
-						// Increment the counter of comments
-						postsNbComments.set(i, postsNbComments.get(i) + 1);
+						int sizeCommentsAuthorsIds = postsCommentsAuthorsIds.get(i).size();
+						int commentAuthorId = Integer.parseInt(line[2]);
+						for (int j = 0; j <= sizeCommentsAuthorsIds; j++) {
+							if (j == sizeCommentsAuthorsIds) {
+								postsCommentsAuthorsIds.get(i).add(commentAuthorId);
+								// Increment the number of comments authors
+								postsCommentsAuthorsNb.set(i, postsCommentsAuthorsNb.get(i) + 1);
+								break;
+							} else if (postsCommentsAuthorsIds.get(i).get(j) == commentAuthorId) {
+								break;
+							}
+						}
 					}
 					break;
 				}
@@ -206,9 +222,8 @@ public class Scores {
 				if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
 					postsCommentsScores.get(i).set(j,
 							10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
-				} else if (postsCommentsScores.get(i).get(j) != 0) {
+				} else {
 					postsCommentsScores.get(i).set(j, 0);
-					postsNbComments.set(i, postsNbComments.get(i) - 1);
 				}
 			}
 		}
@@ -232,7 +247,6 @@ public class Scores {
 		// Delete the post
 		postsScores.remove(i);
 		postsIds.remove(i);
-		postsNbComments.remove(i);
 		postsStartDates.remove(i);
 		postsAuthors.remove(i);
 
@@ -240,5 +254,7 @@ public class Scores {
 		postsCommentsScores.remove(i);
 		postsCommentsIds.remove(i);
 		postsCommentsStartDates.remove(i);
+		postsCommentsAuthorsNb.remove(i);
+		postsCommentsAuthorsIds.remove(i);
 	}
 }
