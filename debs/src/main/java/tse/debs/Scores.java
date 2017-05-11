@@ -13,19 +13,22 @@ public class Scores {
 	static ArrayList<String[]> file = new ArrayList<String[]>();
 
 	static ArrayList<Integer> postsScores = new ArrayList<Integer>();
-	static ArrayList<Integer> postsIds = new ArrayList<Integer>();
+	static ArrayList<Long> postsIds = new ArrayList<Long>();
 	static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
 	static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
 	static ArrayList<String> postsAuthors = new ArrayList<String>();
 
 	static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
-	static ArrayList<ArrayList<Integer>> postsCommentsIds = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
 	static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
-	static ArrayList<ArrayList<Integer>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
 	static ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
 
 	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
+
+	static ArrayList<Integer> max = new ArrayList<Integer>();
+	static ArrayList<Integer> min = new ArrayList<Integer>();
 
 	public Scores() {
 		super();
@@ -35,7 +38,7 @@ public class Scores {
 		return postsScores;
 	}
 
-	public static ArrayList<Integer> getPostsIds() {
+	public static ArrayList<Long> getPostsIds() {
 		return postsIds;
 	}
 
@@ -55,7 +58,7 @@ public class Scores {
 		return postsCommentsScores;
 	}
 
-	public static ArrayList<ArrayList<Integer>> getPostsCommentsIds() {
+	public static ArrayList<ArrayList<Long>> getPostsCommentsIds() {
 		return postsCommentsIds;
 	}
 
@@ -63,33 +66,33 @@ public class Scores {
 		return postsCommentsStartDates;
 	}
 
-	public static ArrayList<ArrayList<Integer>> getPostsCommentsAuthorsIds() {
+	public static ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
 		return postsCommentsAuthorsIds;
 	}
 
 	public static void openPost(String[] line) {
 		postsScores.add(10);
-		postsIds.add(Integer.parseInt(line[1]));
+		postsIds.add(Long.parseLong(line[1]));
 		postsStartDates.add(formatter.parseDateTime(line[0]));
 		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10));
 		postsAuthors.add(line[4]);
 
 		postsCommentsScores.add(new ArrayList<Integer>());
-		postsCommentsIds.add(new ArrayList<Integer>());
+		postsCommentsIds.add(new ArrayList<Long>());
 		postsCommentsStartDates.add(new ArrayList<DateTime>());
 		postsCommentsAuthorsNb.add(0);
-		postsCommentsAuthorsIds.add(new ArrayList<Integer>());
+		postsCommentsAuthorsIds.add(new ArrayList<Long>());
 	}
 
 	public static void openComment(String[] line) {
-		int linkId = -1;
+		long linkId = -1;
 		// int size = commentsScores.size();
 		int size = postsIds.size();
 
 		// The comment is linked to a post
 		if (line[5].equals("") || line[5].equals("-1")) {
-			linkId = Integer.parseInt(line[6]);
-			int id = -1;
+			linkId = Long.parseLong(line[6]);
+			long id = -1;
 			int i = 0;
 
 			while (i < size) {
@@ -109,8 +112,8 @@ public class Scores {
 						scores.add(10);
 						postsCommentsScores.set(i, scores);
 
-						ArrayList<Integer> ids = postsCommentsIds.get(i);
-						ids.add(Integer.parseInt(line[1]));
+						ArrayList<Long> ids = postsCommentsIds.get(i);
+						ids.add(Long.parseLong(line[1]));
 						postsCommentsIds.set(i, ids);
 
 						ArrayList<DateTime> startDates = postsCommentsStartDates.get(i);
@@ -121,7 +124,7 @@ public class Scores {
 						postsDeathDates.set(i, commentDate.plusDays(10));
 
 						int sizeCommentsAuthorsIds = postsCommentsAuthorsIds.get(i).size();
-						int commentAuthorId = Integer.parseInt(line[2]);
+						long commentAuthorId = Long.parseLong(line[2]);
 						for (int j = 0; j <= sizeCommentsAuthorsIds; j++) {
 							if (j == sizeCommentsAuthorsIds) {
 								postsCommentsAuthorsIds.get(i).add(commentAuthorId);
@@ -140,12 +143,12 @@ public class Scores {
 			}
 
 		} else { // The comment is linked to another comment
-			linkId = Integer.parseInt(line[5]);
+			linkId = Long.parseLong(line[5]);
 			int i = 0;
 
 			postsLoop: while (i < size) {
 
-				ArrayList<Integer> ids = postsCommentsIds.get(i);
+				ArrayList<Long> ids = postsCommentsIds.get(i);
 				int sizeIds = ids.size();
 				int j = 0;
 
@@ -165,7 +168,7 @@ public class Scores {
 							scores.add(10);
 							postsCommentsScores.set(i, scores);
 
-							ids.add(Integer.parseInt(line[1]));
+							ids.add(Long.parseLong(line[1]));
 							postsCommentsIds.set(i, ids);
 
 							ArrayList<DateTime> startDates = postsCommentsStartDates.get(i);
@@ -188,7 +191,7 @@ public class Scores {
 
 	}
 
-	public void calculMax(ArrayList<Integer> max, DateTime date) {
+	public void calculMax(DateTime date) {
 
 		for (int i = 0; i < max.size(); i++) {
 			postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
@@ -202,6 +205,10 @@ public class Scores {
 		for (int i = 0; i < max.size(); i++) {
 			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
 				postsScores.set(i, postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
+			}
+			if (postsScores.get(max.get(i)) == 0) {
+				deletePost(max.get(i));
+
 			}
 		}
 
@@ -231,17 +238,21 @@ public class Scores {
 			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
 				postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
 			}
+			if (postsScores.get(i) == 0) {
+				deletePost(i);
+			}
 		}
 	}
 
-	public void calculMin(ArrayList<Integer> min, DateTime date) {
+	public void calculMin(DateTime date) {
 
 		for (int i = 0; i < min.size(); i++) {
 			if (date.isAfter(postsDeathDates.get(min.get(i)))) {
 				deletePost(min.get(i));
 			}
 		}
-	}
+
+S	}
 
 	public static void deletePost(int i) {
 		// Delete the post
@@ -256,5 +267,17 @@ public class Scores {
 		postsCommentsStartDates.remove(i);
 		postsCommentsAuthorsNb.remove(i);
 		postsCommentsAuthorsIds.remove(i);
+		for (int j = 0; j < min.size(); j++) {
+			if (min.get(j) > min.get(i)) {
+				min.set(j, min.get(j) - 1);
+			}
+
+		}
+		for (int j = 0; j < max.size(); j++) {
+			if (max.get(j) > max.get(i)) {
+				max.set(j, max.get(j) - 1);
+			}
+		}
+
 	}
 }

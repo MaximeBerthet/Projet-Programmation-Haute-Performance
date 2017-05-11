@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Tri {
 	int[] L = new int[3];
-
+	int t=0;
 	public Tri() {
 		super();
 
@@ -45,39 +45,41 @@ public class Tri {
 
 	}
 
-	public void Maximiser(ArrayList<Integer> tab, int M1, int M2, ArrayList<Integer> max, ArrayList<Integer> min,
-			boolean post) {
-		if (tab.size() == 9) {
-			for (int i = 0; i < tab.size(); i++) {
-				if (tab.get(i) * 10 > M2) {
-					max.add(max.size(), i);
+	public void Maximiser(ArrayList<ArrayList<Long>> postsCommentsIds, int M1, int M2, ArrayList<Integer> max, ArrayList<Integer> min,
+			boolean post,boolean r) {
+		if ((postsCommentsIds.size() ==5) && (t==0) || r==true ) {
+			for (int i = 0; i < postsCommentsIds.size(); i++) {
+				if (10+postsCommentsIds.get(i).size() * 10 >= M2) {
+					max.add(i);
 				} else {
-					min.add(min.size(), i);
+					min.add(i);
 				}
 
 			}
+			t=1;
+			r=false;
 
 		} else if (M2 > M1) {
 			if (post == true) {
 				for (int i = 0; i < max.size(); i++) {
-					if (tab.get(max.get(i)) * 10 < M2) {
+					if (10+postsCommentsIds.get(max.get(i)).size() * 10 < M2) {
 
-						min.add(min.size(), max.get(i));
+						min.add(max.get(i));
 						max.remove(i);
 					}
 
 				}
 				if (M2 <= 10) {
-					max.add(max.size(), tab.size() - 1);
+					max.add(postsCommentsIds.size()-1);
 				} else {
-					min.add(min.size(), tab.size() - 1);
+					min.add(postsCommentsIds.size()-1);
 				}
 			}
 			if (post == false) {
 
 				for (int i = 0; i < max.size(); i++) {
-					if (tab.get(max.get(i)) * 10 + 10 < M2) {
-						min.add(min.size(), max.get(i));
+					if (10+postsCommentsIds.get(max.get(i)).size() * 10 + 10 < M2) {
+						min.add(max.get(i));
 						max.remove(i);
 					}
 
@@ -87,30 +89,34 @@ public class Tri {
 
 		} else if (M2 <= M1) {
 			if (post == true) {
-				for (int i = 0; i < min.size(); i++) {
-					if (tab.get(min.get(i)) * 10 >= M2) {
+				if (min.size() > 0) {
+					for (int i = 0; i < min.size(); i++) {
+						if (10+postsCommentsIds.get(min.get(i)).size() * 10 >= M2) {
 
-						max.add(max.size(), min.get(i));
-						min.remove(i);
+							max.add(min.get(i));
+							min.remove(i);
+						}
+
 					}
-
 				}
-				if (M2 <= 10) {
-					max.add(max.size(), tab.size() - 1);
+				if (M2 < 11) {
+					max.add(postsCommentsIds.size()-1);
 				} else {
-					min.add(min.size(), tab.size() - 1);
+					min.add(postsCommentsIds.size()-1);
 				}
 			}
 			if (post == false) {
+				if (min.size() > 0) {
 
-				for (int i = 0; i < min.size(); i++) {
-					if (tab.get(min.get(i)) * 10 + 10 >= M2) {
-						max.add(max.size(), min.get(i));
-						min.remove(i);
+					for (int i = 0; i < min.size(); i++) {
+						if (10+postsCommentsIds.get(min.get(i)).size() * 10 + 10 >= M2) {
+							max.add(min.get(i));
+							min.remove(i);
+						}
+
 					}
 
 				}
-
 			}
 		}
 

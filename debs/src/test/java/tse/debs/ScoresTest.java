@@ -35,10 +35,10 @@ public class ScoresTest {
 
 		date = formatter.parseDateTime("2010-02-09T04:05:10.421+0000");
 
-		ArrayList<Integer> ids = new ArrayList<Integer>();
-		int id1 = 1039993;
-		int id2 = 299101;
-		int id3 = 529360;
+		ArrayList<Long> ids = new ArrayList<Long>();
+		long id1 = 1039993;
+		long id2 = 299101;
+		long id3 = 529360;
 		ids.add(id1);
 		ids.add(id2);
 		ids.add(id3);
@@ -71,12 +71,12 @@ public class ScoresTest {
 
 		assertTrue("add multiple files", ids.equals(scores.getPostsIds()));
 
-		ArrayList<ArrayList<Integer>> commentFileIds = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> commId = new ArrayList<Integer>();
-		commId.add(529590);
+		ArrayList<ArrayList<Long>> commentFileIds = new ArrayList<ArrayList<Long>>();
+		ArrayList<Long> commId = new ArrayList<Long>();
+		commId.add((long) 529590);
 		commentFileIds.add(commId);
-		commentFileIds.add(new ArrayList<Integer>());
-		commentFileIds.add(new ArrayList<Integer>());
+		commentFileIds.add(new ArrayList<Long>());
+		commentFileIds.add(new ArrayList<Long>());
 		assertTrue("commentsIds match", commentFileIds.equals(scores.getPostsCommentsIds()));
 
 		// ArrayList<Integer> commentFileLinkedId = new ArrayList<Integer>();

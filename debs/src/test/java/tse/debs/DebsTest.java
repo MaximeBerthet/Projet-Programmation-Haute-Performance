@@ -14,8 +14,8 @@ public class DebsTest {
 	@Test
 	public void test() throws IOException {
 		//String path = "C:/Tests/Q1BigTest/";
-		String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-		String folderName = "Q1BigTest";
+		String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet";
+		String folderName = "dataDebs";
 		String path = mainPath + "/" + folderName + "/";
 		Debs d = new Debs(path, folderName);
 		d.calcul();

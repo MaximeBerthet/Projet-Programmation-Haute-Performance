@@ -22,8 +22,8 @@ public class mainTest {
 	static int[] bestScores;
 
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
-	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	static String folderName = "Q1Case4";
+	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet";
+	static String folderName = "dataDebs";
 	static String path = mainPath + "/" + folderName + "/";
 
 	static Reader reader = new Reader(path);
@@ -39,9 +39,9 @@ public class mainTest {
 
 	@Test
 	public void test() throws IOException {
-
+		long tps = System.currentTimeMillis();
 		display.resetLogs();
-		
+
 		String[] linePost = reader.readLinePosts();
 		String[] lineComment = reader.readLineComments();
 
@@ -105,6 +105,8 @@ public class mainTest {
 
 		br.close();
 		brExpected.close();
+
+		System.out.println((System.currentTimeMillis() - tps) + " ms");
 		// fail("Not yet implemented");
 	}
 

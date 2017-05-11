@@ -24,7 +24,10 @@ public class Debs {
 	static DateTime date = null;
 
 	boolean p = false;
+	boolean r = false;
 	int nbpost = 0;
+	int nbpostAtt = 5;
+	int nbpostAtt2 = 5;
 	int M1 = 0;
 	int M2 = 0;
 	int[] list;
@@ -34,13 +37,13 @@ public class Debs {
 		this.folderName = folder;
 		this.fileName = fileName;
 
-		display = new Display(scores, "q1test");
+		display = new Display(scores, fileName);
+		display.resetLogs();
 		reader = new Reader(folder);
 	}
 
 	public void calcul() {
-		ArrayList<Integer> max = new ArrayList<Integer>();
-		ArrayList<Integer> min = new ArrayList<Integer>();
+		
 
 		comment = reader.readLineComments();
 		post = reader.readLinePosts();
@@ -52,13 +55,13 @@ public class Debs {
 					scores.openComment(comment);
 					nbpost = scores.getPostsIds().size();
 					DateTime dateComment = formatter.parseDateTime(comment[0]);
-					if (nbpost < 1000) {
+					if (nbpost < nbpostAtt) {
 						scores.calcul(dateComment);
 
 					} else {
-						tri.Maximiser(scores.postsScores, M1, M2, max, min, p);
-						scores.calculMax(max, dateComment);
-						scores.calculMin(min, dateComment);
+						tri.Maximiser(scores.postsCommentsIds, M1, M2, scores.max, scores.min, p,r);
+						scores.calculMax(dateComment);
+						scores.calculMin(dateComment);
 					}
 
 					// scores.calcul(dateComment);
@@ -70,13 +73,13 @@ public class Debs {
 					scores.openPost(post);
 					nbpost = scores.getPostsIds().size();
 					DateTime datePost = formatter.parseDateTime(post[0]);
-					if (nbpost < 1000) {
+					if (nbpost < nbpostAtt) {
 						scores.calcul(datePost);
 
 					} else {
-						tri.Maximiser(scores.postsScores, M1, M2, max, min, p);
-						scores.calculMax(max, datePost);
-						scores.calculMin(min, datePost);
+						tri.Maximiser(scores.postsCommentsIds, M1, M2, scores.max, scores.min, p,r);
+						scores.calculMax(datePost);
+						scores.calculMin(datePost);
 
 					}
 					// scores.calcul(datePost);
@@ -88,17 +91,17 @@ public class Debs {
 			} else {
 				DateTime dateComment = formatter.parseDateTime(comment[0]);
 				DateTime datePost = formatter.parseDateTime(post[0]);
-				p = dateComment.isBefore(datePost);
-				if (p) {
+				p = dateComment.isAfter(datePost);
+				if (!p) {
 					scores.openComment(comment);
 					nbpost = scores.getPostsIds().size();
-					if (nbpost < 1000) {
+					if (nbpost < nbpostAtt) {
 						scores.calcul(dateComment);
 
 					} else {
-						tri.Maximiser(scores.postsScores, M1, M2, max, min, p);
-						scores.calculMax(max, datePost);
-						scores.calculMin(min, datePost);
+						tri.Maximiser(scores.postsCommentsIds, M1, M2, scores.max, scores.min, p,r);
+						scores.calculMax(datePost);
+						scores.calculMin(datePost);
 					}
 					comment = reader.readLineComments();
 					date = dateComment;
@@ -106,12 +109,12 @@ public class Debs {
 				} else {
 					scores.openPost(post);
 					nbpost = scores.getPostsIds().size();
-					if (nbpost < 1000) {
+					if (nbpost < nbpostAtt) {
 						scores.calcul(datePost);
 					} else {
-						tri.Maximiser(scores.postsScores, M1, M2, max, min, p);
-						scores.calculMax(max, dateComment);
-						scores.calculMin(min, dateComment);
+						tri.Maximiser(scores.postsCommentsIds, M1, M2, scores.max, scores.min, p,r);
+						scores.calculMax(dateComment);
+						scores.calculMin(dateComment);
 					}
 					post = reader.readLinePosts();
 					date = datePost;
@@ -119,16 +122,19 @@ public class Debs {
 				}
 			}
 
-			list = tri.Trier(scores.postsScores);
+			list=tri.Trier(scores.postsScores);
 			display.addLine(list, date);
-			M1 = M2;
-
-			if (list[2] != -1) {
-				M2 = scores.postsScores.get(list[2]);
-			} else if (list[1] != -1) {
-				M2 = scores.postsScores.get(list[1]);
-			} else {
-				M2 = scores.postsScores.get(list[0]);
+			M1=M2;
+			nbpost=scores.getPostsIds().size();
+			if (nbpost >=4) {
+				M2=scores.postsScores.get(list[2]);
+			}
+			if (M2<=30){
+				nbpostAtt=1000000;
+			}
+			else{
+				nbpostAtt=nbpostAtt2;
+				r=true;
 			}
 		}
 	}
