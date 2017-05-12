@@ -10,67 +10,81 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class Scores {
-	static ArrayList<String[]> file = new ArrayList<String[]>();
+	private ArrayList<Integer> postsScores = new ArrayList<Integer>();
+	private ArrayList<Long> postsIds = new ArrayList<Long>();
+	private ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
+	private ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
+	private ArrayList<String> postsAuthors = new ArrayList<String>();
 
-	static ArrayList<Integer> postsScores = new ArrayList<Integer>();
-	static ArrayList<Long> postsIds = new ArrayList<Long>();
-	static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
-	static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
-	static ArrayList<String> postsAuthors = new ArrayList<String>();
+	private ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
+	private ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
+	private ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
+	private ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
 
-	static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
-	static ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
-	static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
-	static ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
-	static ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
-
-	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
 
-	static ArrayList<Integer> max = new ArrayList<Integer>();
-	static ArrayList<Integer> min = new ArrayList<Integer>();
+	private ArrayList<Integer> max = new ArrayList<Integer>();
+	private ArrayList<Integer> min = new ArrayList<Integer>();
 
 	public Scores() {
 		super();
 	}
 
-	public static ArrayList<Integer> getPostsScores() {
+	public ArrayList<Integer> getPostsScores() {
 		return postsScores;
 	}
 
-	public static ArrayList<Long> getPostsIds() {
+	public ArrayList<Long> getPostsIds() {
 		return postsIds;
 	}
 
-	public static ArrayList<Integer> getPostsCommentsAuthorsNb() {
+	public ArrayList<Integer> getPostsCommentsAuthorsNb() {
 		return postsCommentsAuthorsNb;
 	}
 
-	public static ArrayList<DateTime> getPostsStartDates() {
+	public ArrayList<DateTime> getPostsStartDates() {
 		return postsStartDates;
 	}
 
-	public static ArrayList<String> getPostsAuthors() {
+	public ArrayList<String> getPostsAuthors() {
 		return postsAuthors;
 	}
 
-	public static ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
+	public ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
 		return postsCommentsScores;
 	}
 
-	public static ArrayList<ArrayList<Long>> getPostsCommentsIds() {
+	public ArrayList<ArrayList<Long>> getPostsCommentsIds() {
 		return postsCommentsIds;
 	}
 
-	public static ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
+	public ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
 		return postsCommentsStartDates;
 	}
 
-	public static ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
+	public ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
 		return postsCommentsAuthorsIds;
 	}
 
-	public static void openPost(String[] line) {
+	public ArrayList<Integer> getMax() {
+		return max;
+	}
+
+	public void setMax(ArrayList<Integer> max) {
+		this.max = max;
+	}
+
+	public ArrayList<Integer> getMin() {
+		return min;
+	}
+
+	public void setMin(ArrayList<Integer> min) {
+		this.min = min;
+	}
+
+	public void openPost(String[] line) {
 		postsScores.add(10);
 		postsIds.add(Long.parseLong(line[1]));
 		postsStartDates.add(formatter.parseDateTime(line[0]));
@@ -84,9 +98,8 @@ public class Scores {
 		postsCommentsAuthorsIds.add(new ArrayList<Long>());
 	}
 
-	public static void openComment(String[] line) {
+	public void openComment(String[] line) {
 		long linkId = -1;
-		// int size = commentsScores.size();
 		int size = postsIds.size();
 
 		// The comment is linked to a post
@@ -252,9 +265,9 @@ public class Scores {
 			}
 		}
 
-S	}
+	}
 
-	public static void deletePost(int i) {
+	private void deletePost(int i) {
 		// Delete the post
 		postsScores.remove(i);
 		postsIds.remove(i);
@@ -268,15 +281,25 @@ S	}
 		postsCommentsAuthorsNb.remove(i);
 		postsCommentsAuthorsIds.remove(i);
 		for (int j = 0; j < min.size(); j++) {
-			if (min.get(j) > min.get(i)) {
+			if (min.get(j) > i) {
 				min.set(j, min.get(j) - 1);
 			}
+			if (min.get(j)==i){
+				min.remove(j);
+				j--;
+			}
+			
 
 		}
 		for (int j = 0; j < max.size(); j++) {
-			if (max.get(j) > max.get(i)) {
+			if (max.get(j) > i) {
 				max.set(j, max.get(j) - 1);
 			}
+			if (max.get(j)==i){
+				max.remove(j);
+				j--;
+			}
+			
 		}
 
 	}

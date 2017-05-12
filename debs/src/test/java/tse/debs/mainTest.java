@@ -18,28 +18,27 @@ import org.junit.Test;
 
 public class mainTest {
 
-	static Tri tri = new Tri();
-	static int[] bestScores;
+	Tri tri = new Tri();
+	int[] bestScores;
 
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
-	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet";
-	static String folderName = "dataDebs";
-	static String path = mainPath + "/" + folderName + "/";
+	String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
+	String folderName = "10_000";
+	String path = mainPath + "/" + folderName + "/";
 
-	static Reader reader = new Reader(path);
+	Reader reader = new Reader(path);
 
-	static Scores scores = new Scores();
+	Scores scores = new Scores();
 
-	static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
-			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
+	DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").withLocale(Locale.ROOT)
+			.withChronology(ISOChronology.getInstanceUTC());
 
-	static Display display = new Display(scores, folderName);
+	Display display = new Display(scores, folderName);
 
-	static DateTime date = null;
+	DateTime date = null;
 
 	@Test
 	public void test() throws IOException {
-		long tps = System.currentTimeMillis();
 		display.resetLogs();
 
 		String[] linePost = reader.readLinePosts();
@@ -47,8 +46,18 @@ public class mainTest {
 
 		DateTime datePost = null;
 		DateTime dateComment = null;
-
+		
+		double temps1 = 0;
+		double temps2 = 0;
+		double tempsBoucle = 0;
+		long tempsDébut = System.currentTimeMillis();
+		
+		double var1 = 10^9;
+		
+		int counter = 0;
+		
 		while (linePost[0] != (null) || lineComment[0] != (null)) {
+			tempsBoucle = System.nanoTime() / var1;
 			if (linePost[0] == (null) || lineComment[0] == (null)) {
 				if (linePost[0] == (null)) {
 					scores.openComment(lineComment);
@@ -79,14 +88,25 @@ public class mainTest {
 					scores.openPost(linePost);
 					scores.calcul(datePost);
 					linePost = reader.readLinePosts();
+					temps1 = System.nanoTime()/var1 - tempsBoucle;
 					date = datePost;
+					temps2 = System.nanoTime()/var1 - tempsBoucle - temps1;
+					counter ++;
 				}
 			}
+			
 
-			bestScores = tri.Trier(Scores.getPostsScores());
+			bestScores = tri.Trier(scores.getPostsScores());
 			display.addLine(bestScores, date);
+			
 		}
 
+		System.out.println((System.currentTimeMillis() - tempsDébut) + " ms");
+		//temps1 = temps1/counter;
+		//temps2 = temps2/counter;
+		System.out.println("tps 1 : " + temps1 + " ms, tps 2 : " + temps2 + " ms ");
+
+		/*
 		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
@@ -97,17 +117,28 @@ public class mainTest {
 		String tempExpected = null;
 		tempExpected = brExpected.readLine();
 
-		while (tempExpected != null || temp != null /* && temp != "" */) {
-			assertEquals(tempExpected, temp);
+		ArrayList<Integer> falseLines = new ArrayList<Integer>();
+		int line = 0;
+
+		while (tempExpected != null && temp != null) {
+			line++;
+			if (!tempExpected.toString().equals(temp.toString())) {
+				falseLines.add(line);
+			}
 			tempExpected = brExpected.readLine();
 			temp = br.readLine();
 		}
 
-		br.close();
-		brExpected.close();
+		if (tempExpected != null || temp != null) {
+			fail("nombre de lignes différentes");
+		}
 
-		System.out.println((System.currentTimeMillis() - tps) + " ms");
-		// fail("Not yet implemented");
+		System.out.println("Lignes fausses :" + falseLines);
+
+		assertEquals(0, falseLines.size());
+
+		br.close();
+		brExpected.close();*/
 	}
 
 }
