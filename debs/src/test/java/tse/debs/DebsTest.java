@@ -18,6 +18,7 @@ public class DebsTest {
 	static String path = mainPath + "/" + folderName + "/";
 
 	static boolean bestpost = false;
+	
 
 	@Test
 	public void test() throws IOException {

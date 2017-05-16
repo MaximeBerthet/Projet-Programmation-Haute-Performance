@@ -2,12 +2,15 @@ package tse.debs;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import sun.misc.Lock;
 
 public class Scores {
 	private static ArrayList<Integer> postsScores = new ArrayList<Integer>();
@@ -16,7 +19,7 @@ public class Scores {
 	private static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
 	private static ArrayList<String> postsAuthors = new ArrayList<String>();
 
-	private static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
+	private static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>(); // à supprimer !!!!
 	private static ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
 	private static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
 	private static ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
@@ -29,9 +32,36 @@ public class Scores {
 	private static ArrayList<Integer> min = new ArrayList<Integer>();
 
 	private static int premierpassage = 0;
+	
+	static Lock lock = new Lock();
+	static AtomicInteger threadCounter = new AtomicInteger();
 
 	public Scores() {
 		super();
+	}
+	
+	public static void setPostsScores(int index, int newValue){
+		try{
+			lock.lock();
+			postsScores.set(index, newValue);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Erreur");
+		} finally {			
+			lock.unlock();
+		}
+	}
+	
+	public static void setPostsCommentsScores(int index, ArrayList<Integer> newValue){
+		try{
+			lock.lock();
+			postsCommentsScores.set(index, newValue);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Erreur");
+		} finally {			
+			lock.unlock();
+		}
 	}
 
 	public static ArrayList<Integer> getPostsScores() {
@@ -48,6 +78,10 @@ public class Scores {
 
 	public static ArrayList<DateTime> getPostsStartDates() {
 		return postsStartDates;
+	}
+	
+	public static ArrayList<DateTime> getPostsDeathDates(){
+		return postsDeathDates;
 	}
 
 	public static ArrayList<String> getPostsAuthors() {
@@ -223,8 +257,52 @@ public class Scores {
 
 	}
 
-	public static void calcul(DateTime date) {
-
+	public void calcul(DateTime date) {
+		
+		int end = postsIds.size() / 2;
+		
+		ArrayList<Integer> deadPosts1 = new ArrayList<Integer>();
+		CalculScores calculScore1 = new CalculScores(this, 0, end/4, date, deadPosts1, threadCounter);
+		
+		ArrayList<Integer> deadPosts2 = new ArrayList<Integer>();
+		CalculScores calculScore2 = new CalculScores(this, end/4, end/2, date, deadPosts2, threadCounter);
+		
+		ArrayList<Integer> deadPosts3 = new ArrayList<Integer>();
+		CalculScores calculScore3 = new CalculScores(this, end/2, end*3/2, date, deadPosts3, threadCounter);
+		
+		ArrayList<Integer> deadPosts4 = new ArrayList<Integer>();
+		CalculScores calculScore4 = new CalculScores(this, end*3/2, postsIds.size(), date, deadPosts4, threadCounter);
+		
+		calculScore1.run();
+		calculScore2.run();
+		calculScore3.run();
+		calculScore4.run();
+		
+		while (threadCounter.get() < 4){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		for (int i=0; i<deadPosts1.size(); i++){
+			deletePost(deadPosts1.get(i));
+		}
+		
+		for (int i=0; i<deadPosts2.size(); i++){
+			deletePost(deadPosts2.get(i));
+		}
+		
+		for (int i=0; i<deadPosts3.size(); i++){
+			deletePost(deadPosts3.get(i));
+		}
+		
+		for (int i=0; i<deadPosts4.size(); i++){
+			deletePost(deadPosts4.get(i));
+		}
+		/*
 		for (int i = 0; i < postsScores.size(); i++) {
 			if (date.isAfter(postsDeathDates.get(i))) {
 				deletePost(i);
@@ -250,7 +328,7 @@ public class Scores {
 				}
 
 			}
-		}
+		}*/
 	}
 
 	public static void calculMin(DateTime date) {

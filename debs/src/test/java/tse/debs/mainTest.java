@@ -22,9 +22,9 @@ public class mainTest {
 	int[] bestScores;
 
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
-	String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	String folderName = "10_000";
-	String path = mainPath + "/" + folderName + "/";
+	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
+	static String folderName = "100_000";
+	static String path = mainPath + "/" + folderName + "/";
 
 	Reader reader = new Reader(path);
 
@@ -33,7 +33,7 @@ public class mainTest {
 	DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").withLocale(Locale.ROOT)
 			.withChronology(ISOChronology.getInstanceUTC());
 
-	Display display = new Display(scores, "mainTest" + folderName);
+	Display display = new Display(scores, "multithreading" + folderName);
 
 	DateTime date = null;
 
@@ -46,18 +46,18 @@ public class mainTest {
 
 		DateTime datePost = null;
 		DateTime dateComment = null;
-		
-		//double temps1 = 0;
-		//double temps2 = 0;
-		//double tempsBoucle = 0;
-		//long tempsDébut = System.currentTimeMillis();
-		
-		//double var1 = Math.pow(10, 6);
-		
-		//double counter = 0;
-		
+
+		// double temps1 = 0;
+		// double temps2 = 0;
+		// double tempsBoucle = 0;
+		// long tempsDébut = System.currentTimeMillis();
+
+		// double var1 = Math.pow(10, 6);
+
+		// double counter = 0;
+
 		while (linePost[0] != (null) || lineComment[0] != (null)) {
-			//tempsBoucle = System.nanoTime() / var1;
+			// tempsBoucle = System.nanoTime() / var1;
 			if (linePost[0] == (null) || lineComment[0] == (null)) {
 				if (linePost[0] == (null)) {
 					scores.openComment(lineComment);
@@ -91,21 +91,19 @@ public class mainTest {
 					date = datePost;
 				}
 			}
-			
 
-			//temps1 = System.nanoTime();
+			// temps1 = System.nanoTime();
 			bestScores = tri.Trier(scores.getPostsScores());
-			//temps2 += System.nanoTime() - temps1;
+			// temps2 += System.nanoTime() - temps1;
 			display.addLine(bestScores, date);
-			//counter ++;
-			
+			// counter ++;
+
 		}
 
-		//System.out.println((System.currentTimeMillis() - tempsDébut) + " ms");
-		//temps2 = temps2/var1;
-		//System.out.println("tps 2 : " + temps2 + " ms ");
+		//comparaison();
+	}
 
-		/*
+	public static void comparaison() throws IOException {
 		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
@@ -128,16 +126,16 @@ public class mainTest {
 			temp = br.readLine();
 		}
 
+		System.out.println("Lignes fausses :" + falseLines);
+
 		if (tempExpected != null || temp != null) {
 			fail("nombre de lignes différentes");
 		}
 
-		System.out.println("Lignes fausses :" + falseLines);
-
 		assertEquals(0, falseLines.size());
 
 		br.close();
-		brExpected.close();*/
+		brExpected.close();
 	}
 
 }
