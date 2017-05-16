@@ -10,81 +10,67 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class Scores {
-	private ArrayList<Integer> postsScores = new ArrayList<Integer>();
-	private ArrayList<Long> postsIds = new ArrayList<Long>();
-	private ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
-	private ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
-	private ArrayList<String> postsAuthors = new ArrayList<String>();
+	private static ArrayList<Integer> postsScores = new ArrayList<Integer>();
+	private static ArrayList<Long> postsIds = new ArrayList<Long>();
+	private static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
+	private static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
+	private static ArrayList<String> postsAuthors = new ArrayList<String>();
 
-	private ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
-	private ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
-	private ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
-	private ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
-	private ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
+	private static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>();
+	private static ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
+	private static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
+	private static ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
+	private static ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
 
-	private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
 
-	private ArrayList<Integer> max = new ArrayList<Integer>();
-	private ArrayList<Integer> min = new ArrayList<Integer>();
-
+	private static ArrayList<Integer> max = new ArrayList<Integer>();
+	private static ArrayList<Integer> min = new ArrayList<Integer>();
+	
+	private static int premierpassage = 0;
+	
 	public Scores() {
 		super();
 	}
 
-	public ArrayList<Integer> getPostsScores() {
+	public static ArrayList<Integer> getPostsScores() {
 		return postsScores;
 	}
 
-	public ArrayList<Long> getPostsIds() {
+	public static ArrayList<Long> getPostsIds() {
 		return postsIds;
 	}
 
-	public ArrayList<Integer> getPostsCommentsAuthorsNb() {
+	public static ArrayList<Integer> getPostsCommentsAuthorsNb() {
 		return postsCommentsAuthorsNb;
 	}
 
-	public ArrayList<DateTime> getPostsStartDates() {
+	public static  ArrayList<DateTime> getPostsStartDates() {
 		return postsStartDates;
 	}
 
-	public ArrayList<String> getPostsAuthors() {
+	public static ArrayList<String> getPostsAuthors() {
 		return postsAuthors;
 	}
 
-	public ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
+	public static ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
 		return postsCommentsScores;
 	}
 
-	public ArrayList<ArrayList<Long>> getPostsCommentsIds() {
+	public static ArrayList<ArrayList<Long>> getPostsCommentsIds() {
 		return postsCommentsIds;
 	}
 
-	public ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
+	public static ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
 		return postsCommentsStartDates;
 	}
 
-	public ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
+	public static ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
 		return postsCommentsAuthorsIds;
 	}
 
-	public ArrayList<Integer> getMax() {
-		return max;
-	}
-
-	public void setMax(ArrayList<Integer> max) {
-		this.max = max;
-	}
-
-	public ArrayList<Integer> getMin() {
-		return min;
-	}
-
-	public void setMin(ArrayList<Integer> min) {
-		this.min = min;
-	}
-
-	public void openPost(String[] line) {
+	public static void openPost(String[] line) {
 		postsScores.add(10);
 		postsIds.add(Long.parseLong(line[1]));
 		postsStartDates.add(formatter.parseDateTime(line[0]));
@@ -98,7 +84,7 @@ public class Scores {
 		postsCommentsAuthorsIds.add(new ArrayList<Long>());
 	}
 
-	public void openComment(String[] line) {
+	public static void openComment(String[] line) {
 		long linkId = -1;
 		int size = postsIds.size();
 
@@ -204,30 +190,41 @@ public class Scores {
 
 	}
 
-	public void calculMax(DateTime date) {
+	public static void calculMax(DateTime date) {
 
 		for (int i = 0; i < max.size(); i++) {
-			postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
-		}
-		for (int i = 0; i < max.size(); i++) {
-			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-				postsCommentsScores.get(max.get(i)).set(j,
-						10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
+			if (date.isBefore(postsStartDates.get(max.get(i)).plusDays(10))) {
+				postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
+			} else {
+				postsScores.set(max.get(i), 0);
 			}
-		}
-		for (int i = 0; i < max.size(); i++) {
+		//}
+		//for (int i = 0; i < max.size(); i++) {
 			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-				postsScores.set(i, postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
+				if (date.isBefore(postsCommentsStartDates.get(max.get(i)).get(j).plusDays(10))) {
+					
+					postsCommentsScores.get(max.get(i)).set(j,
+							10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
+					
+				} else {
+					postsCommentsScores.get(max.get(i)).set(j, 0);
+				}
+			}
+		//}
+		//for (int i = 0; i < max.size(); i++) {
+			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
+				postsScores.set(max.get(i), postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
 			}
 			if (postsScores.get(max.get(i)) == 0) {
 				deletePost(max.get(i));
+				
 
 			}
 		}
 
 	}
 
-	public void calcul(DateTime date) {
+	public static void calcul(DateTime date) {
 
 		for (int i = 0; i < postsScores.size(); i++) {
 			if (date.isBefore(postsStartDates.get(i).plusDays(10))) {
@@ -236,8 +233,8 @@ public class Scores {
 				postsScores.set(i, 0);
 			}
 
-		}
-		for (int i = 0; i < postsScores.size(); i++) {
+		//}
+		//for (int i = 0; i < postsScores.size(); i++) {
 			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
 				if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
 					postsCommentsScores.get(i).set(j,
@@ -246,32 +243,37 @@ public class Scores {
 					postsCommentsScores.get(i).set(j, 0);
 				}
 			}
-		}
-		for (int i = 0; i < postsScores.size(); i++) {
+		//}
+		//for (int i = 0; i < postsScores.size(); i++) {
 			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
 				postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
 			}
 			if (postsScores.get(i) == 0) {
 				deletePost(i);
+				
 			}
 		}
 	}
 
-	public void calculMin(DateTime date) {
+	public static void calculMin(DateTime date) {
 
 		for (int i = 0; i < min.size(); i++) {
 			if (date.isAfter(postsDeathDates.get(min.get(i)))) {
 				deletePost(min.get(i));
+				
+			} else {
+				postsScores.set(min.get(i), 1);
 			}
 		}
 
 	}
 
-	private void deletePost(int i) {
+	private static void deletePost(int i) {
 		// Delete the post
 		postsScores.remove(i);
 		postsIds.remove(i);
 		postsStartDates.remove(i);
+		postsDeathDates.remove(i);
 		postsAuthors.remove(i);
 
 		// Delete the comments linked to the posts
@@ -280,27 +282,111 @@ public class Scores {
 		postsCommentsStartDates.remove(i);
 		postsCommentsAuthorsNb.remove(i);
 		postsCommentsAuthorsIds.remove(i);
+
 		for (int j = 0; j < min.size(); j++) {
 			if (min.get(j) > i) {
 				min.set(j, min.get(j) - 1);
 			}
-			if (min.get(j)==i){
+			if (min.get(j) == i) {
 				min.remove(j);
 				j--;
 			}
-			
 
 		}
 		for (int j = 0; j < max.size(); j++) {
 			if (max.get(j) > i) {
 				max.set(j, max.get(j) - 1);
 			}
-			if (max.get(j)==i){
+			if (max.get(j) == i) {
 				max.remove(j);
 				j--;
 			}
-			
-		}
 
+		}
+	}
+
+	public static void Maximiser(int M1, int M2, boolean post, boolean r, int size) {
+		
+
+		if ((postsCommentsIds.size() == size) && (premierpassage == 0) || r == true) {
+			for (int i = 0; i < postsCommentsIds.size(); i++) {
+				if (10 + postsCommentsIds.get(i).size() * 10 >= M2) {
+					max.add(i);
+				} else {
+					min.add(i);
+
+				}
+
+			}
+			premierpassage = 1;
+			r = false;
+
+		} else if (M2 > M1) {
+			if (post == true) {
+				for (int i = 0; i < max.size(); i++) {
+					 if (10 + postsCommentsIds.get(max.get(i)).size() * 10 <
+					 M2) {
+					//if (this.getPostsScores().get(max.get(i)) < M2) {
+						min.add(max.get(i));
+						max.remove(i);
+						i--;
+					}
+
+				}
+				if (M2 <= 10) {
+					max.add(postsCommentsIds.size() - 1);
+				} else {
+					min.add(postsCommentsIds.size() - 1);
+				}
+			}
+			if (post == false) {
+
+				for (int i = 0; i < max.size(); i++) {
+					 if (10 + postsCommentsIds.get(max.get(i)).size() * 10 +
+					 10 < M2) {
+					//if (this.getPostsScores().get(max.get(i)) + 10 < M2) {
+						min.add(max.get(i));
+						max.remove(i);
+						i--;
+					}
+
+				}
+
+			}
+
+		} else if (M2 <= M1) {
+			if (post == true) {
+				if (min.size() > 0) {
+					for (int i = 0; i < min.size(); i++) {
+						if (10 + postsCommentsIds.get(min.get(i)).size() * 10 >= M2) {
+
+							max.add(min.get(i));
+							min.remove(i);
+							i--;
+						}
+
+					}
+				}
+				if (M2 < 11) {
+					max.add(postsCommentsIds.size() - 1);
+				} else {
+					min.add(postsCommentsIds.size() - 1);
+				}
+			}
+			if (post == false) {
+				if (min.size() > 0) {
+
+					for (int i = 0; i < min.size(); i++) {
+						if (10 + postsCommentsIds.get(min.get(i)).size() * 10 + 10 >= M2) {
+							max.add(min.get(i));
+							min.remove(i);
+							i--;
+						}
+
+					}
+
+				}
+			}
+		}
 	}
 }

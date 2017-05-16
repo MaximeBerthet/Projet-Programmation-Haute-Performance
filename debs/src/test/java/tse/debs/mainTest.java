@@ -33,7 +33,7 @@ public class mainTest {
 	DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").withLocale(Locale.ROOT)
 			.withChronology(ISOChronology.getInstanceUTC());
 
-	Display display = new Display(scores, folderName);
+	Display display = new Display(scores, "mainTest" + folderName);
 
 	DateTime date = null;
 
@@ -47,17 +47,17 @@ public class mainTest {
 		DateTime datePost = null;
 		DateTime dateComment = null;
 		
-		double temps1 = 0;
-		double temps2 = 0;
-		double tempsBoucle = 0;
-		long tempsDébut = System.currentTimeMillis();
+		//double temps1 = 0;
+		//double temps2 = 0;
+		//double tempsBoucle = 0;
+		//long tempsDébut = System.currentTimeMillis();
 		
-		double var1 = 10^9;
+		//double var1 = Math.pow(10, 6);
 		
-		int counter = 0;
+		//double counter = 0;
 		
 		while (linePost[0] != (null) || lineComment[0] != (null)) {
-			tempsBoucle = System.nanoTime() / var1;
+			//tempsBoucle = System.nanoTime() / var1;
 			if (linePost[0] == (null) || lineComment[0] == (null)) {
 				if (linePost[0] == (null)) {
 					scores.openComment(lineComment);
@@ -88,23 +88,22 @@ public class mainTest {
 					scores.openPost(linePost);
 					scores.calcul(datePost);
 					linePost = reader.readLinePosts();
-					temps1 = System.nanoTime()/var1 - tempsBoucle;
 					date = datePost;
-					temps2 = System.nanoTime()/var1 - tempsBoucle - temps1;
-					counter ++;
 				}
 			}
 			
 
+			//temps1 = System.nanoTime();
 			bestScores = tri.Trier(scores.getPostsScores());
+			//temps2 += System.nanoTime() - temps1;
 			display.addLine(bestScores, date);
+			//counter ++;
 			
 		}
 
-		System.out.println((System.currentTimeMillis() - tempsDébut) + " ms");
-		//temps1 = temps1/counter;
-		//temps2 = temps2/counter;
-		System.out.println("tps 1 : " + temps1 + " ms, tps 2 : " + temps2 + " ms ");
+		//System.out.println((System.currentTimeMillis() - tempsDébut) + " ms");
+		//temps2 = temps2/var1;
+		//System.out.println("tps 2 : " + temps2 + " ms ");
 
 		/*
 		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));

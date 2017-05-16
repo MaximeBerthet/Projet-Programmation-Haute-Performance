@@ -8,26 +8,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 
-
 public class DebsTest {
-	//String path = "C:/Tests/Q1BigTest/"
-	//String mainPath = "C:/Tests/";
-	String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	String folderName = "Q1CommentCount";
-	String path = mainPath + "/" + folderName + "/";
-	
-	boolean bestpost=false;
+	// String path = "C:/Tests/Q1BigTest/"
+	// String mainPath = "C:/Tests/";
+	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
+	static String folderName = "100_000";
+	static String path = mainPath + "/" + folderName + "/";
+
+	static boolean bestpost = false;
+
 	@Test
 	public void test() throws IOException {
 		Debs d = new Debs(path, folderName);
 		d.calcul(bestpost);
-		comparaison();
+		//comparaison();
 	}
-	
-	public void comparaison() throws IOException {
+
+	public static void comparaison() throws IOException {
 		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
@@ -51,7 +50,7 @@ public class DebsTest {
 		}
 
 		System.out.println("Lignes fausses :" + falseLines);
-		
+
 		if (tempExpected != null || temp != null) {
 			fail("nombre de lignes différentes");
 		}

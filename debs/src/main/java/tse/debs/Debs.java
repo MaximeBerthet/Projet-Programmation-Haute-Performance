@@ -1,6 +1,5 @@
 package tse.debs;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
@@ -9,43 +8,44 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class Debs {
-	private String folderName;
-	private String fileName;
-	private String[] comment = new String[7];
-	private String[] post = new String[5];
+	private static String folderName;
+	private static String fileName;
+	private static String[] comment = new String[7];
+	private static  String[] post = new String[5];
 
-	private Scores scores = new Scores();
-	private Display display;
-	private Reader reader;
-	private Tri tri = new Tri();
+	private static Scores scores = new Scores();
+	private static Display display;
+	private static Reader reader;
+	private static Tri tri = new Tri();
 
-	private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
-	private DateTime date = null;
+	private static DateTime date = null;
 
-	private boolean p = false;
-	private boolean r = false;
-	private boolean deuxiemepassage=true;
-	private boolean premierpassage=true;
-	private int nbpost = 0;
-	private int nbpostAtt = 5;
-	private int nbpostAtt2 = 5;
-	private int M1 = 0;
-	private int M2 = 0;
-	private int[] list = new int[3];
-	private int[] list2 = new int[3];
+	private static boolean p = false;
+	private static boolean r = false;
+	private static boolean deuxiemepassage = true;
+	private static boolean premierpassage = true;
+	private static int nbpost = 0;
+	private static int nbpostAtt = 5;
+	private static int M1 = 0;
+	private static int M2 = 0;
+	private static int[] list = new int[3];
+	private static int[] list2 = new int[3];
 
 	public Debs(String folder, String fileName) {
 		super();
-		this.folderName = folder;
-		this.fileName = fileName;
+		Debs.folderName = folder;
+		Debs.fileName = fileName;
 
 		display = new Display(scores, fileName);
-		display.resetLogs();
+
 		reader = new Reader(folder);
 	}
 
-	public void calcul(boolean bestpost) {
+	public static void calcul(boolean bestpost) {
+
+		display.resetLogs();
 
 		comment = reader.readLineComments();
 		post = reader.readLinePosts();
@@ -61,7 +61,7 @@ public class Debs {
 						scores.calcul(dateComment);
 
 					} else {
-						tri.Maximiser(scores, M1, M2, p, r);
+						scores.Maximiser( M1, M2, p, r, nbpostAtt);
 						scores.calculMax(dateComment);
 						scores.calculMin(dateComment);
 					}
@@ -79,7 +79,7 @@ public class Debs {
 						scores.calcul(datePost);
 
 					} else {
-						tri.Maximiser(scores, M1, M2, p, r);
+						scores.Maximiser( M1, M2, p, r, nbpostAtt);
 						scores.calculMax(datePost);
 						scores.calculMin(datePost);
 
@@ -101,7 +101,7 @@ public class Debs {
 						scores.calcul(dateComment);
 
 					} else {
-						tri.Maximiser(scores, M1, M2, p, r);
+						scores.Maximiser(M1, M2, p, r, nbpostAtt);
 						scores.calculMax(dateComment);
 						scores.calculMin(dateComment);
 					}
@@ -114,7 +114,7 @@ public class Debs {
 					if (nbpost < nbpostAtt) {
 						scores.calcul(datePost);
 					} else {
-						tri.Maximiser(scores, M1, M2, p, r);
+						scores.Maximiser(M1, M2, p, r, nbpostAtt);
 						scores.calculMax(datePost);
 						scores.calculMin(datePost);
 					}
@@ -124,59 +124,49 @@ public class Debs {
 				}
 			}
 
-			list2=list.clone();
+			list2 = list.clone();
 			list = tri.Trier(scores.getPostsScores());
-			if (bestpost == true)  {
-				if ((list2[2] != -1)&&(list2[1] != -1)&&(list[2] != -1)&&(list[1] != -1)){
+			if (bestpost == true) {
+				if ((list2[2] != -1) && (list2[1] != -1) && (list[2] != -1) && (list[1] != -1)) {
 					if (((scores.getPostsIds().get(list[0]) == scores.getPostsIds().get(list2[0]))
 							&& (scores.getPostsIds().get(list[1]) == scores.getPostsIds().get(list2[1]))
 							&& (scores.getPostsIds().get(list[2]) == scores.getPostsIds().get(list2[2])))) {
-						
-					}
-					else{
+
+					} else {
 						display.addLine(list, date);
 					}
-				}
-				else if ((list2[1] != -1)&&(list[1] != -1)&&(deuxiemepassage==false)){
+				} else if ((list2[1] != -1) && (list[1] != -1) && (deuxiemepassage == false)) {
 					if (((scores.getPostsIds().get(list[0]) == scores.getPostsIds().get(list2[0]))
 							&& (scores.getPostsIds().get(list[1]) == scores.getPostsIds().get(list2[1])))) {
-						
-					}
-					else{
+
+					} else {
 						display.addLine(list, date);
 					}
-				}
-				else if ((list2[1] == -1)&&(list[1] != -1)&&(deuxiemepassage==true)){
-						display.addLine(list, date);
-						deuxiemepassage=false;
-				}
-				else if ((list2[0] !=-1)&&(list[0] !=-1)&&premierpassage==false){ 
-					if (((scores.getPostsIds().get(list[0]) != scores.getPostsIds().get(list2[0])))){
-						display.addLine(list, date);
-					}
-				}
-				else if (premierpassage==true){ 
+				} else if ((list2[1] == -1) && (list[1] != -1) && (deuxiemepassage == true)) {
 					display.addLine(list, date);
-					premierpassage=false;
+					deuxiemepassage = false;
+				} else if ((list2[0] != -1) && (list[0] != -1) && premierpassage == false) {
+					if (((scores.getPostsIds().get(list[0]) != scores.getPostsIds().get(list2[0])))) {
+						display.addLine(list, date);
+					}
+				} else if (premierpassage == true) {
+					display.addLine(list, date);
+					premierpassage = false;
 				}
-				
-				
-			}
-			else {
+
+			} else {
 				display.addLine(list, date);
+				/*
+				 * if (scores.tr== true){ System.out.println(k);
+				 * scores.tr=false; } k++;
+				 */
 			}
 			M1 = M2;
 			nbpost = scores.getPostsIds().size();
 			if (nbpost >= 4) {
 				M2 = scores.getPostsScores().get(list[2]);
 			}
-			// if (M2<=30){
-			// nbpostAtt=1000000;
-			// }
-			// else{
-			// nbpostAtt=nbpostAtt2;
-			// r=true;
-			// }
+			
 		}
 	}
 }

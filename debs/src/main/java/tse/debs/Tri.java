@@ -3,8 +3,8 @@ package tse.debs;
 import java.util.ArrayList;
 
 public class Tri {
-	private int[] L = new int[3];
-	private int t = 0;
+	private static int[] L = new int[3];
+	//private int t = 0;
 
 	public Tri() {
 		super();
@@ -46,17 +46,18 @@ public class Tri {
 
 	}
 
-	public void Maximiser(Scores scores, int M1, int M2, boolean post, boolean r) {
+	/*public void Maximiser(Scores scores, int M1, int M2, boolean post, boolean r,int size) {
 		ArrayList<ArrayList<Long>> postsCommentsIds = scores.getPostsCommentsIds();
 		ArrayList<Integer> max = scores.getMax();
 		ArrayList<Integer> min = scores.getMin();
 
-		if ((postsCommentsIds.size() == 5) && (t == 0) || r == true) {
+		if ((postsCommentsIds.size() == size) && (t == 0) || r == true) {
 			for (int i = 0; i < postsCommentsIds.size(); i++) {
 				if (10 + postsCommentsIds.get(i).size() * 10 >= M2) {
 					max.add(i);
 				} else {
 					min.add(i);
+					
 				}
 
 			}
@@ -66,10 +67,11 @@ public class Tri {
 		} else if (M2 > M1) {
 			if (post == true) {
 				for (int i = 0; i < max.size(); i++) {
-					if (10 + postsCommentsIds.get(max.get(i)).size() * 10 < M2) {
-
+					//if (10 + postsCommentsIds.get(max.get(i)).size() * 10 < M2) {
+					if (scores.getPostsScores().get(max.get(i)) < M2) {
 						min.add(max.get(i));
 						max.remove(i);
+						
 					}
 
 				}
@@ -82,9 +84,11 @@ public class Tri {
 			if (post == false) {
 
 				for (int i = 0; i < max.size(); i++) {
-					if (10 + postsCommentsIds.get(max.get(i)).size() * 10 + 10 < M2) {
+					//if (10 + postsCommentsIds.get(max.get(i)).size() * 10 + 10 < M2) {
+					if (scores.getPostsScores().get(max.get(i))+10 < M2) {
 						min.add(max.get(i));
 						max.remove(i);
+						
 					}
 
 				}
@@ -99,6 +103,7 @@ public class Tri {
 
 							max.add(min.get(i));
 							min.remove(i);
+							
 						}
 
 					}
@@ -116,6 +121,7 @@ public class Tri {
 						if (10 + postsCommentsIds.get(min.get(i)).size() * 10 + 10 >= M2) {
 							max.add(min.get(i));
 							min.remove(i);
+							
 						}
 
 					}
@@ -126,5 +132,5 @@ public class Tri {
 
 		scores.setMax(max);
 		scores.setMin(min);
-	}
+	}*/
 }
