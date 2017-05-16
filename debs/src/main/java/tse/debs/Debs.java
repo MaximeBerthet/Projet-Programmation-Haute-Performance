@@ -23,7 +23,6 @@ public class Debs {
 	private static DateTime date = null;
 
 	private static boolean p = false;
-	private static boolean r = false;
 	private static boolean deuxiemepassage = true;
 	private static boolean premierpassage = true;
 	private static int nbpost = 0;
@@ -61,7 +60,7 @@ public class Debs {
 						scores.calcul(dateComment);
 
 					} else {
-						scores.Maximiser( M1, M2, p, r, nbpostAtt);
+						scores.Maximiser( M1, M2, p, nbpostAtt);
 						scores.calculMax(dateComment);
 						scores.calculMin(dateComment);
 					}
@@ -79,7 +78,7 @@ public class Debs {
 						scores.calcul(datePost);
 
 					} else {
-						scores.Maximiser( M1, M2, p, r, nbpostAtt);
+						scores.Maximiser( M1, M2, p, nbpostAtt);
 						scores.calculMax(datePost);
 						scores.calculMin(datePost);
 
@@ -101,7 +100,7 @@ public class Debs {
 						scores.calcul(dateComment);
 
 					} else {
-						scores.Maximiser(M1, M2, p, r, nbpostAtt);
+						scores.Maximiser(M1, M2, p, nbpostAtt);
 						scores.calculMax(dateComment);
 						scores.calculMin(dateComment);
 					}
@@ -114,7 +113,7 @@ public class Debs {
 					if (nbpost < nbpostAtt) {
 						scores.calcul(datePost);
 					} else {
-						scores.Maximiser(M1, M2, p, r, nbpostAtt);
+						scores.Maximiser(M1, M2, p, nbpostAtt);
 						scores.calculMax(datePost);
 						scores.calculMin(datePost);
 					}
@@ -163,8 +162,16 @@ public class Debs {
 			}
 			M1 = M2;
 			nbpost = scores.getPostsIds().size();
-			if (nbpost >= 4) {
+			if (nbpost >= 3) {
 				M2 = scores.getPostsScores().get(list[2]);
+			}
+			else if ((nbpost == 2))
+			{
+				M2 = scores.getPostsScores().get(list[1]);
+			}
+			else
+			{
+				M2 = scores.getPostsScores().get(list[0]);
 			}
 			
 		}

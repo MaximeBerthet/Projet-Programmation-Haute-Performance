@@ -27,9 +27,9 @@ public class Scores {
 
 	private static ArrayList<Integer> max = new ArrayList<Integer>();
 	private static ArrayList<Integer> min = new ArrayList<Integer>();
-	
+
 	private static int premierpassage = 0;
-	
+
 	public Scores() {
 		super();
 	}
@@ -46,7 +46,7 @@ public class Scores {
 		return postsCommentsAuthorsNb;
 	}
 
-	public static  ArrayList<DateTime> getPostsStartDates() {
+	public static ArrayList<DateTime> getPostsStartDates() {
 		return postsStartDates;
 	}
 
@@ -193,33 +193,32 @@ public class Scores {
 	public static void calculMax(DateTime date) {
 
 		for (int i = 0; i < max.size(); i++) {
-			if (date.isBefore(postsStartDates.get(max.get(i)).plusDays(10))) {
-				postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
-			} else {
-				postsScores.set(max.get(i), 0);
-			}
-		//}
-		//for (int i = 0; i < max.size(); i++) {
-			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-				if (date.isBefore(postsCommentsStartDates.get(max.get(i)).get(j).plusDays(10))) {
-					
-					postsCommentsScores.get(max.get(i)).set(j,
-							10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
-					
-				} else {
-					postsCommentsScores.get(max.get(i)).set(j, 0);
-				}
-			}
-		//}
-		//for (int i = 0; i < max.size(); i++) {
-			for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-				postsScores.set(max.get(i), postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
-			}
-			if (postsScores.get(max.get(i)) == 0) {
+			if (date.isAfter(postsDeathDates.get(max.get(i)))) {
 				deletePost(max.get(i));
-				
+				i--;
+
+			} else {
+				if (date.isBefore(postsStartDates.get(max.get(i)).plusDays(10))) {
+					postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
+				} else {
+					postsScores.set(max.get(i), 0);
+				}
+
+				for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
+					if (date.isBefore(postsCommentsStartDates.get(max.get(i)).get(j).plusDays(10))) {
+						postsCommentsScores.get(max.get(i)).set(j,
+								10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
+					} else {
+						postsCommentsScores.get(max.get(i)).set(j, 0);
+					}
+				}
+				for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
+					postsScores.set(max.get(i),
+							postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
+				}
 
 			}
+
 		}
 
 	}
@@ -227,30 +226,29 @@ public class Scores {
 	public static void calcul(DateTime date) {
 
 		for (int i = 0; i < postsScores.size(); i++) {
-			if (date.isBefore(postsStartDates.get(i).plusDays(10))) {
-				postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
-			} else {
-				postsScores.set(i, 0);
-			}
-
-		//}
-		//for (int i = 0; i < postsScores.size(); i++) {
-			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
-				if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
-					postsCommentsScores.get(i).set(j,
-							10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
-				} else {
-					postsCommentsScores.get(i).set(j, 0);
-				}
-			}
-		//}
-		//for (int i = 0; i < postsScores.size(); i++) {
-			for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
-				postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
-			}
-			if (postsScores.get(i) == 0) {
+			if (date.isAfter(postsDeathDates.get(i))) {
 				deletePost(i);
-				
+				i--;
+
+			} else {
+				if (date.isBefore(postsStartDates.get(i).plusDays(10))) {
+					postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
+				} else {
+					postsScores.set(i, 0);
+				}
+
+				for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
+					if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
+						postsCommentsScores.get(i).set(j,
+								10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
+					} else {
+						postsCommentsScores.get(i).set(j, 0);
+					}
+				}
+				for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
+					postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
+				}
+
 			}
 		}
 	}
@@ -260,9 +258,9 @@ public class Scores {
 		for (int i = 0; i < min.size(); i++) {
 			if (date.isAfter(postsDeathDates.get(min.get(i)))) {
 				deletePost(min.get(i));
-				
+				i--;
 			} else {
-				postsScores.set(min.get(i), 1);
+				postsScores.set(min.get(i), 0);
 			}
 		}
 
@@ -305,10 +303,9 @@ public class Scores {
 		}
 	}
 
-	public static void Maximiser(int M1, int M2, boolean post, boolean r, int size) {
-		
+	public static void Maximiser(int M1, int M2, boolean post, int size) {
 
-		if ((postsCommentsIds.size() == size) && (premierpassage == 0) || r == true) {
+		if ((postsCommentsIds.size() == size) && (premierpassage == 0)) {
 			for (int i = 0; i < postsCommentsIds.size(); i++) {
 				if (10 + postsCommentsIds.get(i).size() * 10 >= M2) {
 					max.add(i);
@@ -319,14 +316,12 @@ public class Scores {
 
 			}
 			premierpassage = 1;
-			r = false;
 
 		} else if (M2 > M1) {
 			if (post == true) {
 				for (int i = 0; i < max.size(); i++) {
-					 if (10 + postsCommentsIds.get(max.get(i)).size() * 10 <
-					 M2) {
-					//if (this.getPostsScores().get(max.get(i)) < M2) {
+					if (10 + postsCommentsIds.get(max.get(i)).size() * 10 < M2) {
+						// if (this.getPostsScores().get(max.get(i)) < M2) {
 						min.add(max.get(i));
 						max.remove(i);
 						i--;
@@ -342,9 +337,9 @@ public class Scores {
 			if (post == false) {
 
 				for (int i = 0; i < max.size(); i++) {
-					 if (10 + postsCommentsIds.get(max.get(i)).size() * 10 +
-					 10 < M2) {
-					//if (this.getPostsScores().get(max.get(i)) + 10 < M2) {
+					if (10 + postsCommentsIds.get(max.get(i)).size() * 10 + 10 < M2) {
+						// if (this.getPostsScores().get(max.get(i)) + 10 < M2)
+						// {
 						min.add(max.get(i));
 						max.remove(i);
 						i--;
