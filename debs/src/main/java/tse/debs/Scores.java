@@ -1,29 +1,29 @@
 package tse.debs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import sun.misc.Lock;
-
 public class Scores {
-	private static ArrayList<Integer> postsScores = new ArrayList<Integer>();
-	private static ArrayList<Long> postsIds = new ArrayList<Long>();
-	private static ArrayList<DateTime> postsStartDates = new ArrayList<DateTime>();
-	private static ArrayList<DateTime> postsDeathDates = new ArrayList<DateTime>();
-	private static ArrayList<String> postsAuthors = new ArrayList<String>();
+	private static List<Integer> postsScores = new ArrayList<Integer>();
+	private static List<Long> postsIds = new ArrayList<Long>();
+	private static List<DateTime> postsStartDates = new ArrayList<DateTime>();
+	private static List<DateTime> postsDeathDates = new ArrayList<DateTime>();
+	private static List<String> postsAuthors = new ArrayList<String>();
 
-	private static ArrayList<ArrayList<Integer>> postsCommentsScores = new ArrayList<ArrayList<Integer>>(); // à supprimer !!!!
-	private static ArrayList<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
-	private static ArrayList<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
-	private static ArrayList<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
-	private static ArrayList<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
+	private static List<ArrayList<Long>> postsCommentsIds = new ArrayList<ArrayList<Long>>();
+	private static List<ArrayList<DateTime>> postsCommentsStartDates = new ArrayList<ArrayList<DateTime>>();
+	private static List<ArrayList<Long>> postsCommentsAuthorsIds = new ArrayList<ArrayList<Long>>();
+	private static List<Integer> postsCommentsAuthorsNb = new ArrayList<Integer>();
 
 	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
@@ -32,76 +32,102 @@ public class Scores {
 	private static ArrayList<Integer> min = new ArrayList<Integer>();
 
 	private static int premierpassage = 0;
-	
-	static Lock lock = new Lock();
-	static AtomicInteger threadCounter = new AtomicInteger();
+
+	// CalculScores
+	private static AtomicInteger threadCounter = new AtomicInteger();
+	private static Lock lockScore = new ReentrantLock();
+	private static Lock lockThreads = new ReentrantLock();
+
+	private static AtomicInteger threadRun0 = new AtomicInteger(0);
+	private static AtomicInteger threadRun1 = new AtomicInteger(0);
+	private static AtomicInteger threadRun2 = new AtomicInteger(0);
+	private static AtomicInteger threadRun3 = new AtomicInteger(0);
+
+	private static AtomicInteger threadRun4 = new AtomicInteger(0);
+	private static AtomicInteger threadRun5 = new AtomicInteger(0);
+	private static AtomicInteger threadRun6 = new AtomicInteger(0);
+	private static AtomicInteger threadRun7 = new AtomicInteger(0);
+
+	private static List<Integer> deadPosts = Collections.synchronizedList(new ArrayList<Integer>());
+	private static int nbThreads = 8;
+
+	private CalculScores calculScore0 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun0, 0, nbThreads);
+	private CalculScores calculScore1 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun1, 1, nbThreads);
+	private CalculScores calculScore2 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun2, 2, nbThreads);
+	private CalculScores calculScore3 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun3, 3, nbThreads);
+
+	private CalculScores calculScore4 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun4, 4, nbThreads);
+	private CalculScores calculScore5 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun5, 5, nbThreads);
+	private CalculScores calculScore6 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun6, 6, nbThreads);
+	private CalculScores calculScore7 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+			threadRun7, 7, nbThreads);
 
 	public Scores() {
 		super();
-	}
-	
-	public static void setPostsScores(int index, int newValue){
-		try{
-			lock.lock();
-			postsScores.set(index, newValue);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Erreur");
-		} finally {			
-			lock.unlock();
-		}
-	}
-	
-	public static void setPostsCommentsScores(int index, ArrayList<Integer> newValue){
-		try{
-			lock.lock();
-			postsCommentsScores.set(index, newValue);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Erreur");
-		} finally {			
-			lock.unlock();
-		}
+		new Thread(calculScore0).start();
+		new Thread(calculScore1).start();
+		new Thread(calculScore2).start();
+		new Thread(calculScore3).start();
+
+		new Thread(calculScore4).start();
+		new Thread(calculScore5).start();
+		new Thread(calculScore6).start();
+		new Thread(calculScore7).start();
 	}
 
-	public static ArrayList<Integer> getPostsScores() {
+	public static void setPostsScores(int index, int newValue) {
+		postsScores.set(index, newValue);
+	}
+
+	public static List<Integer> getPostsScores() {
 		return postsScores;
 	}
 
-	public static ArrayList<Long> getPostsIds() {
+	public static List<Long> getPostsIds() {
 		return postsIds;
 	}
 
-	public static ArrayList<Integer> getPostsCommentsAuthorsNb() {
+	public static List<Integer> getPostsCommentsAuthorsNb() {
 		return postsCommentsAuthorsNb;
 	}
 
-	public static ArrayList<DateTime> getPostsStartDates() {
+	public static List<DateTime> getPostsStartDates() {
 		return postsStartDates;
 	}
-	
-	public static ArrayList<DateTime> getPostsDeathDates(){
+
+	public static List<DateTime> getPostsDeathDates() {
 		return postsDeathDates;
 	}
 
-	public static ArrayList<String> getPostsAuthors() {
+	public static List<String> getPostsAuthors() {
 		return postsAuthors;
 	}
 
-	public static ArrayList<ArrayList<Integer>> getPostsCommentsScores() {
-		return postsCommentsScores;
-	}
-
-	public static ArrayList<ArrayList<Long>> getPostsCommentsIds() {
+	public static List<ArrayList<Long>> getPostsCommentsIds() {
 		return postsCommentsIds;
 	}
 
-	public static ArrayList<ArrayList<DateTime>> getPostsCommentsStartDates() {
+	public static List<ArrayList<DateTime>> getPostsCommentsStartDates() {
 		return postsCommentsStartDates;
 	}
 
-	public static ArrayList<ArrayList<Long>> getPostsCommentsAuthorsIds() {
+	public static List<ArrayList<Long>> getPostsCommentsAuthorsIds() {
 		return postsCommentsAuthorsIds;
+	}
+
+	public static ArrayList<Integer> getMax() {
+		return max;
+	}
+
+	public static ArrayList<Integer> getMin() {
+		return min;
 	}
 
 	public static void openPost(String[] line) {
@@ -111,7 +137,6 @@ public class Scores {
 		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10));
 		postsAuthors.add(line[4]);
 
-		postsCommentsScores.add(new ArrayList<Integer>());
 		postsCommentsIds.add(new ArrayList<Long>());
 		postsCommentsStartDates.add(new ArrayList<DateTime>());
 		postsCommentsAuthorsNb.add(0);
@@ -141,10 +166,6 @@ public class Scores {
 						deletePost(i);
 
 					} else {
-						ArrayList<Integer> scores = postsCommentsScores.get(i);
-						scores.add(10);
-						postsCommentsScores.set(i, scores);
-
 						ArrayList<Long> ids = postsCommentsIds.get(i);
 						ids.add(Long.parseLong(line[1]));
 						postsCommentsIds.set(i, ids);
@@ -197,10 +218,6 @@ public class Scores {
 						} else {
 							// We link the comment to a post
 
-							ArrayList<Integer> scores = postsCommentsScores.get(i);
-							scores.add(10);
-							postsCommentsScores.set(i, scores);
-
 							ids.add(Long.parseLong(line[1]));
 							postsCommentsIds.set(i, ids);
 
@@ -224,124 +241,123 @@ public class Scores {
 
 	}
 
-	public static void calculMax(DateTime date) {
+	public void calculMaxMin(DateTime date) {
+		/* Calcul Max */
+		deadPosts.clear();
+		threadCounter.set(0);
+		setThreadsDate(date);
+		setThreadsRun(2);
 
-		for (int i = 0; i < max.size(); i++) {
-			if (date.isAfter(postsDeathDates.get(max.get(i)))) {
-				deletePost(max.get(i));
-				i--;
+		// Start threads
+		synchronized (lockThreads) {
+			lockThreads.notifyAll();
+		}
 
-			} else {
-				if (date.isBefore(postsStartDates.get(max.get(i)).plusDays(10))) {
-					postsScores.set(max.get(i), 10 + Days.daysBetween(date, postsStartDates.get(max.get(i))).getDays());
-				} else {
-					postsScores.set(max.get(i), 0);
+		// Wait for the threads to finish
+		synchronized (lockScore) {
+			while (threadCounter.get() < nbThreads) {
+				try {
+					lockScore.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
-				for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-					if (date.isBefore(postsCommentsStartDates.get(max.get(i)).get(j).plusDays(10))) {
-						postsCommentsScores.get(max.get(i)).set(j,
-								10 + Days.daysBetween(date, postsCommentsStartDates.get(max.get(i)).get(j)).getDays());
-					} else {
-						postsCommentsScores.get(max.get(i)).set(j, 0);
-					}
-				}
-				for (int j = 0; j < postsCommentsScores.get(max.get(i)).size(); j++) {
-					postsScores.set(max.get(i),
-							postsScores.get(max.get(i)) + postsCommentsScores.get(max.get(i)).get(j));
-				}
-
 			}
 
+		}
+
+		for (int i = 0; i < deadPosts.size(); i++) {
+			deletePost(deadPosts.get(i));
+		}
+		
+		/* Calcul Min */
+		deadPosts.clear();
+		threadCounter.set(0);
+		setThreadsDate(date);
+		setThreadsRun(3);
+
+		// Start threads
+		synchronized (lockThreads) {
+			lockThreads.notifyAll();
+		}
+
+		// Wait for the threads to finish
+		synchronized (lockScore) {
+			while (threadCounter.get() < nbThreads) {
+				try {
+					lockScore.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		for (int i = 0; i < deadPosts.size(); i++) {
+			deletePost(deadPosts.get(i));
 		}
 
 	}
 
 	public void calcul(DateTime date) {
-		
-		int end = postsIds.size() / 2;
-		
-		ArrayList<Integer> deadPosts1 = new ArrayList<Integer>();
-		CalculScores calculScore1 = new CalculScores(this, 0, end/4, date, deadPosts1, threadCounter);
-		
-		ArrayList<Integer> deadPosts2 = new ArrayList<Integer>();
-		CalculScores calculScore2 = new CalculScores(this, end/4, end/2, date, deadPosts2, threadCounter);
-		
-		ArrayList<Integer> deadPosts3 = new ArrayList<Integer>();
-		CalculScores calculScore3 = new CalculScores(this, end/2, end*3/2, date, deadPosts3, threadCounter);
-		
-		ArrayList<Integer> deadPosts4 = new ArrayList<Integer>();
-		CalculScores calculScore4 = new CalculScores(this, end*3/2, postsIds.size(), date, deadPosts4, threadCounter);
-		
-		calculScore1.run();
-		calculScore2.run();
-		calculScore3.run();
-		calculScore4.run();
-		
-		while (threadCounter.get() < 4){
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		deadPosts.clear();
+		threadCounter.set(0);
+		setThreadsDate(date);
+		setThreadsRun(1);
+
+		// Start threads
+		synchronized (lockThreads) {
+			lockThreads.notifyAll();
+		}
+
+		// Wait for the threads to finish
+		synchronized (lockScore) {
+			while (threadCounter.get() < nbThreads) {
+				try {
+					lockScore.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		
-		for (int i=0; i<deadPosts1.size(); i++){
-			deletePost(deadPosts1.get(i));
-		}
-		
-		for (int i=0; i<deadPosts2.size(); i++){
-			deletePost(deadPosts2.get(i));
-		}
-		
-		for (int i=0; i<deadPosts3.size(); i++){
-			deletePost(deadPosts3.get(i));
-		}
-		
-		for (int i=0; i<deadPosts4.size(); i++){
-			deletePost(deadPosts4.get(i));
-		}
-		/*
-		for (int i = 0; i < postsScores.size(); i++) {
-			if (date.isAfter(postsDeathDates.get(i))) {
-				deletePost(i);
-				i--;
 
-			} else {
-				if (date.isBefore(postsStartDates.get(i).plusDays(10))) {
-					postsScores.set(i, 10 + Days.daysBetween(date, postsStartDates.get(i)).getDays());
-				} else {
-					postsScores.set(i, 0);
-				}
-
-				for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
-					if (date.isBefore(postsCommentsStartDates.get(i).get(j).plusDays(10))) {
-						postsCommentsScores.get(i).set(j,
-								10 + Days.daysBetween(date, postsCommentsStartDates.get(i).get(j)).getDays());
-					} else {
-						postsCommentsScores.get(i).set(j, 0);
-					}
-				}
-				for (int j = 0; j < postsCommentsScores.get(i).size(); j++) {
-					postsScores.set(i, postsScores.get(i) + postsCommentsScores.get(i).get(j));
-				}
-
-			}
-		}*/
+		for (int i = 0; i < deadPosts.size(); i++) {
+			deletePost(deadPosts.get(i));
+		}
 	}
 
-	public static void calculMin(DateTime date) {
+	private void setThreadsDate(DateTime date) {
+		calculScore0.setDate(date);
+		calculScore1.setDate(date);
+		calculScore2.setDate(date);
+		calculScore3.setDate(date);
 
-		for (int i = 0; i < min.size(); i++) {
-			if (date.isAfter(postsDeathDates.get(min.get(i)))) {
-				deletePost(min.get(i));
-				i--;
-			} else {
-				postsScores.set(min.get(i), 0);
-			}
+		calculScore4.setDate(date);
+		calculScore5.setDate(date);
+		calculScore6.setDate(date);
+		calculScore7.setDate(date);
+	}
+
+	private void setThreadsRun(int i) {
+		threadRun0.set(i);
+		threadRun1.set(i);
+		threadRun2.set(i);
+		threadRun3.set(i);
+
+		threadRun4.set(i);
+		threadRun5.set(i);
+		threadRun6.set(i);
+		threadRun7.set(i);
+	}
+
+	public void stopTreads() {
+		setThreadsRun(-1);
+
+		synchronized (lockThreads) {
+			lockThreads.notifyAll();
 		}
-
 	}
 
 	private static void deletePost(int i) {
@@ -353,7 +369,7 @@ public class Scores {
 		postsAuthors.remove(i);
 
 		// Delete the comments linked to the posts
-		postsCommentsScores.remove(i);
+		// postsCommentsScores.remove(i);
 		postsCommentsIds.remove(i);
 		postsCommentsStartDates.remove(i);
 		postsCommentsAuthorsNb.remove(i);

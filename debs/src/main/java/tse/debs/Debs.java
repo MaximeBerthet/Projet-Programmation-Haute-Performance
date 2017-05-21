@@ -43,9 +43,6 @@ public class Debs {
 	}
 
 	public static void calcul(boolean bestpost) {
-		
-		//double time = 0;
-		//double totalTime = 0;
 
 		display.resetLogs();
 
@@ -53,10 +50,7 @@ public class Debs {
 		post = reader.readLinePosts();
 
 		while ((post[0] != null) || (comment[0] != null)) {
-			
-			//time = 0;
-			//time = System.nanoTime();
-			
+
 			if (post[0] == (null) || comment[0] == (null)) {
 				if (post[0] == (null)) {
 					p = false;
@@ -68,8 +62,7 @@ public class Debs {
 
 					} else {
 						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMax(dateComment);
-						scores.calculMin(dateComment);
+						scores.calculMaxMin(dateComment);
 					}
 
 					// scores.calcul(dateComment);
@@ -86,11 +79,10 @@ public class Debs {
 
 					} else {
 						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMax(datePost);
-						scores.calculMin(datePost);
+						scores.calculMaxMin(datePost);
 
 					}
-					 //scores.calcul(datePost);
+					// scores.calcul(datePost);
 					post = reader.readLinePosts();
 					date = datePost;
 
@@ -108,8 +100,7 @@ public class Debs {
 
 					} else {
 						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMax(dateComment);
-						scores.calculMin(dateComment);
+						scores.calculMaxMin(dateComment);
 					}
 					comment = reader.readLineComments();
 					date = dateComment;
@@ -121,16 +112,13 @@ public class Debs {
 						scores.calcul(datePost);
 					} else {
 						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMax(datePost);
-						scores.calculMin(datePost);
+						scores.calculMaxMin(datePost);
 					}
 					post = reader.readLinePosts();
 					date = datePost;
 
 				}
 			}
-			time = System.nanoTime() - time;
-			
 
 			list2 = list.clone();
 			list = tri.Trier(scores.getPostsScores());
@@ -178,12 +166,9 @@ public class Debs {
 			} else {
 				M2 = scores.getPostsScores().get(list[0]);
 			}
-			
-			//totalTime += time;
-			
+
 		}
 		
-		//totalTime = totalTime / (Math.pow(10, 6));
-		//System.out.println("Total time in ms :" + totalTime);
+		scores.stopTreads();
 	}
 }

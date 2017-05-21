@@ -1,6 +1,7 @@
 package tse.debs;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Tri {
 	private static int[] L = new int[3];
@@ -11,7 +12,7 @@ public class Tri {
 
 	}
 
-	int[] Trier(ArrayList<Integer> tab) {
+	int[] Trier(List<Integer> tab) {
 		for (int j = 0; j < L.length; j++) {
 			L[j] = -1;
 		}

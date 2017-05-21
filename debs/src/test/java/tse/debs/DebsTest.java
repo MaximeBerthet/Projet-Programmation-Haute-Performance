@@ -13,22 +13,24 @@ import org.junit.Test;
 public class DebsTest {
 	// String path = "C:/Tests/Q1BigTest/"
 	// String mainPath = "C:/Tests/";
-	static String mainPath = "D:/Users/Baptiste/Documents/Telecom Saint-Etienne/FISE 2/Semestre 8/ProgrammationHautePerformance/Projet/Tests";
-	static String folderName = "10_000";
+	static String mainPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
+
+	static String folderName = "100_000"; // !!
+
 	static String path = mainPath + "/" + folderName + "/";
+	static String fileOut = "DEBS" + folderName;
 
 	static boolean bestpost = false;
-	
 
 	@Test
 	public void test() throws IOException {
-		Debs d = new Debs(path, folderName);
+		Debs d = new Debs(path, fileOut);
 		d.calcul(bestpost);
-		//comparaison();
+		// comparaison();
 	}
 
 	public static void comparaison() throws IOException {
-		FileReader file = new FileReader(new File("../../TestFiles/" + folderName + ".txt"));
+		FileReader file = new FileReader(new File("../../TestFiles/" + fileOut + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
 		temp = br.readLine();

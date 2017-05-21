@@ -54,7 +54,7 @@ public class ScoresTest {
 		scores.calcul(date);
 
 		// System.out.print(scores.getPostsStartDates());
-		// System.out.print(scores.getPostsScores());
+		System.out.print(scores.getPostsScores());
 		assertTrue("scores", postsScores.equals(scores.getPostsScores()));
 		assertTrue("postsIds match", ids.equals(scores.getPostsIds()));
 
@@ -89,8 +89,7 @@ public class ScoresTest {
 		postsScores.add(3);
 		postsScores.add(9);
 
-		// System.out.print(scores.getPostsScores());
-
+		//System.out.print(scores.getPostsScores());
 		assertTrue("scores", postsScores.equals(scores.getPostsScores()));
 		// assertTrue("ids match",
 		// scores.getPostsIds().get(0).equals(scores.getCommentsLinkedIds().get(0)));
@@ -99,5 +98,7 @@ public class ScoresTest {
 		assertTrue("nbAuthorsComments", scores.getPostsCommentsAuthorsNb().get(2) == 0);
 		// System.out.println(scores.getPostsIds().get(0));
 		// System.out.println(scores.getCommentsLinkedIds().get(0));
+		
+		scores.stopTreads();
 	}
 }
