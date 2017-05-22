@@ -7,94 +7,27 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
-
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
-public class mainTest {
+public class MainTest {
+	// static String testsPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
+	static String testsPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
 
-	Tri tri = new Tri();
-	int[] bestScores;
+	static String folderName = "10_000";
 
-	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
-	static String mainPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
-
-	static String folderName = "100_000";
-
-	static String path = mainPath + "/" + folderName + "/";
-	static String fileOut = "multithreading" + folderName;
-
-	Reader reader = new Reader(path);
-
-	Scores scores = new Scores();
-
-	DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").withLocale(Locale.ROOT)
-			.withChronology(ISOChronology.getInstanceUTC());
-
-	Display display = new Display(scores, fileOut);
-
-	DateTime date = null;
+	static String path = testsPath + "/" + folderName + "/";
+	static String fileName = "multithreading_" + folderName;
+	boolean alwaysDisplay = true;
 
 	@Test
 	public void test() throws IOException {
-		display.resetLogs();
-
-		String[] linePost = reader.readLinePosts();
-		String[] lineComment = reader.readLineComments();
-
-		DateTime datePost = null;
-		DateTime dateComment = null;
-
-		while (linePost[0] != (null) || lineComment[0] != (null)) {
-			if (linePost[0] == (null) || lineComment[0] == (null)) {
-				if (linePost[0] == (null)) {
-					scores.openComment(lineComment);
-					dateComment = formatter.parseDateTime(lineComment[0]);
-					scores.calcul(dateComment);
-					lineComment = reader.readLineComments();
-					date = dateComment;
-
-				} else {
-					scores.openPost(linePost);
-					datePost = formatter.parseDateTime(linePost[0]);
-					scores.calcul(datePost);
-					linePost = reader.readLinePosts();
-					date = datePost;
-
-				}
-
-			} else {
-				datePost = formatter.parseDateTime(linePost[0]);
-				dateComment = formatter.parseDateTime(lineComment[0]);
-				if (dateComment.isBefore(datePost)) {
-					scores.openComment(lineComment);
-					scores.calcul(dateComment);
-					lineComment = reader.readLineComments();
-					date = dateComment;
-
-				} else {
-					scores.openPost(linePost);
-					scores.calcul(datePost);
-					linePost = reader.readLinePosts();
-					date = datePost;
-				}
-			}
-
-			bestScores = tri.Trier(scores.getPostsScores());
-			display.addLine(bestScores, date);
-
-		}
-		scores.stopTreads();
-
-		// comparaison();
+		Main main = new Main(path, fileName, alwaysDisplay);
+		main.run();
+		//comparaison();
 	}
 
 	public static void comparaison() throws IOException {
-		FileReader file = new FileReader(new File("../../TestFiles/" + fileOut + ".txt"));
+		FileReader file = new FileReader(new File("../../TestFiles/" + fileName + ".txt"));
 		BufferedReader br = new BufferedReader(file);
 		String temp = null;
 		temp = br.readLine();

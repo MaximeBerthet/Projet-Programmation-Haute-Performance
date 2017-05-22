@@ -412,7 +412,6 @@ public class Scores {
 		postsAuthors.remove(i);
 
 		// Delete the comments linked to the posts
-		// postsCommentsScores.remove(i);
 		postsCommentsIds.remove(i);
 		postsCommentsStartDates.remove(i);
 		postsCommentsAuthorsNb.remove(i);

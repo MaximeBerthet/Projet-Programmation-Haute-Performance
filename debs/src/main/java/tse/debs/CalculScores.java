@@ -1,8 +1,6 @@
 package tse.debs;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
@@ -112,9 +110,7 @@ public class CalculScores implements Runnable {
 		for (int i = start; i < end; i++) {
 			int postIndice = scores.getMax().get(i);
 			if (date.isAfter(scores.getPostsDeathDates().get(postIndice))) {
-				synchronized (deadPosts) {
-					deadPosts.add(postIndice);
-				}
+				deadPosts.add(postIndice);
 			} else {
 				int postScore = 10 + Days.daysBetween(date, scores.getPostsStartDates().get(postIndice)).getDays(); // 0.6s
 				if (postScore < 0) {
@@ -143,9 +139,7 @@ public class CalculScores implements Runnable {
 		for (int i = start; i < end; i++) {
 			int postIndice = scores.getMin().get(i);
 			if (date.isAfter(scores.getPostsDeathDates().get(postIndice))) {
-				synchronized (deadPosts) {
-					deadPosts.add(postIndice);
-				}
+				deadPosts.add(postIndice);
 			} else {
 				scores.setPostsScores(postIndice, 0);
 			}
