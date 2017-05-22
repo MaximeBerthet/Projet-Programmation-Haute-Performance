@@ -48,25 +48,34 @@ public class Scores {
 	private static AtomicInteger threadRun6 = new AtomicInteger(0);
 	private static AtomicInteger threadRun7 = new AtomicInteger(0);
 
-	private static List<Integer> deadPosts = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts0 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts1 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts2 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts3 = Collections.synchronizedList(new ArrayList<Integer>());
+
+	private static List<Integer> deadPosts4 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts5 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts6 = Collections.synchronizedList(new ArrayList<Integer>());
+	private static List<Integer> deadPosts7 = Collections.synchronizedList(new ArrayList<Integer>());
+
 	private static int nbThreads = 8;
 
-	private CalculScores calculScore0 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore0 = new CalculScores(this, deadPosts0, threadCounter, lockScore, lockThreads,
 			threadRun0, 0, nbThreads);
-	private CalculScores calculScore1 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore1 = new CalculScores(this, deadPosts1, threadCounter, lockScore, lockThreads,
 			threadRun1, 1, nbThreads);
-	private CalculScores calculScore2 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore2 = new CalculScores(this, deadPosts2, threadCounter, lockScore, lockThreads,
 			threadRun2, 2, nbThreads);
-	private CalculScores calculScore3 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore3 = new CalculScores(this, deadPosts3, threadCounter, lockScore, lockThreads,
 			threadRun3, 3, nbThreads);
 
-	private CalculScores calculScore4 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore4 = new CalculScores(this, deadPosts4, threadCounter, lockScore, lockThreads,
 			threadRun4, 4, nbThreads);
-	private CalculScores calculScore5 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore5 = new CalculScores(this, deadPosts5, threadCounter, lockScore, lockThreads,
 			threadRun5, 5, nbThreads);
-	private CalculScores calculScore6 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore6 = new CalculScores(this, deadPosts6, threadCounter, lockScore, lockThreads,
 			threadRun6, 6, nbThreads);
-	private CalculScores calculScore7 = new CalculScores(this, deadPosts, threadCounter, lockScore, lockThreads,
+	private CalculScores calculScore7 = new CalculScores(this, deadPosts7, threadCounter, lockScore, lockThreads,
 			threadRun7, 7, nbThreads);
 
 	public Scores() {
@@ -243,7 +252,7 @@ public class Scores {
 
 	public void calculMaxMin(DateTime date) {
 		/* Calcul Max */
-		deadPosts.clear();
+		clearDeadPostsList();
 		threadCounter.set(0);
 		setThreadsDate(date);
 		setThreadsRun(2);
@@ -266,12 +275,10 @@ public class Scores {
 
 		}
 
-		for (int i = 0; i < deadPosts.size(); i++) {
-			deletePost(deadPosts.get(i));
-		}
-		
+		deleteDeadPosts();
+
 		/* Calcul Min */
-		deadPosts.clear();
+		clearDeadPostsList();
 		threadCounter.set(0);
 		setThreadsDate(date);
 		setThreadsRun(3);
@@ -294,14 +301,12 @@ public class Scores {
 
 		}
 
-		for (int i = 0; i < deadPosts.size(); i++) {
-			deletePost(deadPosts.get(i));
-		}
+		deleteDeadPosts();
 
 	}
 
 	public void calcul(DateTime date) {
-		deadPosts.clear();
+		clearDeadPostsList();
 		threadCounter.set(0);
 		setThreadsDate(date);
 		setThreadsRun(1);
@@ -323,9 +328,7 @@ public class Scores {
 			}
 		}
 
-		for (int i = 0; i < deadPosts.size(); i++) {
-			deletePost(deadPosts.get(i));
-		}
+		deleteDeadPosts();
 	}
 
 	private void setThreadsDate(DateTime date) {
@@ -357,6 +360,46 @@ public class Scores {
 
 		synchronized (lockThreads) {
 			lockThreads.notifyAll();
+		}
+	}
+
+	private void clearDeadPostsList() {
+		deadPosts0.clear();
+		deadPosts1.clear();
+		deadPosts2.clear();
+		deadPosts3.clear();
+
+		deadPosts4.clear();
+		deadPosts5.clear();
+		deadPosts6.clear();
+		deadPosts7.clear();
+	}
+
+	private void deleteDeadPosts() {
+		for (int i = 0; i < deadPosts0.size(); i++) {
+			deletePost(deadPosts0.get(i));
+		}
+		for (int i = 0; i < deadPosts1.size(); i++) {
+			deletePost(deadPosts1.get(i));
+		}
+		for (int i = 0; i < deadPosts2.size(); i++) {
+			deletePost(deadPosts2.get(i));
+		}
+		for (int i = 0; i < deadPosts3.size(); i++) {
+			deletePost(deadPosts3.get(i));
+		}
+
+		for (int i = 0; i < deadPosts4.size(); i++) {
+			deletePost(deadPosts4.get(i));
+		}
+		for (int i = 0; i < deadPosts5.size(); i++) {
+			deletePost(deadPosts5.get(i));
+		}
+		for (int i = 0; i < deadPosts6.size(); i++) {
+			deletePost(deadPosts6.get(i));
+		}
+		for (int i = 0; i < deadPosts7.size(); i++) {
+			deletePost(deadPosts7.get(i));
 		}
 	}
 

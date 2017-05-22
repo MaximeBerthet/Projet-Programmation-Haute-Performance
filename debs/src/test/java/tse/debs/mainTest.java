@@ -23,7 +23,7 @@ public class mainTest {
 	// static String mainPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
 	static String mainPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
 
-	static String folderName = "10_000";
+	static String folderName = "100_000";
 
 	static String path = mainPath + "/" + folderName + "/";
 	static String fileOut = "multithreading" + folderName;

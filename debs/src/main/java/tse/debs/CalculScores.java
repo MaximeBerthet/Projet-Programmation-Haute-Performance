@@ -83,9 +83,7 @@ public class CalculScores implements Runnable {
 
 		for (int i = start; i < end; i++) {
 			if (date.isAfter(scores.getPostsDeathDates().get(i))) {
-				synchronized (deadPosts) {
-					deadPosts.add(i);
-				}
+				deadPosts.add(i);
 			} else {
 				int postScore = 10 + Days.daysBetween(date, scores.getPostsStartDates().get(i)).getDays(); // 0.6s
 				if (postScore < 0) {
