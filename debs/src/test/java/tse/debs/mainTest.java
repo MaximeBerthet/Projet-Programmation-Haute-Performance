@@ -13,7 +13,19 @@ public class MainTest {
 	// static String testsPath = "D:/Utilisateur/Victor/Bureau/Projet Haute
 	static String testsPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
 
-	static String folderName = "10_000";
+	 static String folderName = "Q1Basic";
+	// static String folderName = "Q1Basic2";
+	// static String folderName = "Q1BigTest";
+	// static String folderName = "Q1Case1";
+	// static String folderName = "Q1Case2";
+	// static String folderName = "Q1Case3";
+	// static String folderName = "Q1Case4";
+	// static String folderName = "Q1Case5";
+	// static String folderName = "Q1CommentCount";
+	// static String folderName = "Q1PostExpiredComment";
+	// static String folderName = "Q1PostExpiredComment2";
+	
+	//static String folderName = "2_000_000";
 
 	static String path = testsPath + "/" + folderName + "/";
 	static String fileName = "multithreading_" + folderName;
@@ -23,7 +35,7 @@ public class MainTest {
 	public void test() throws IOException {
 		Main main = new Main(path, fileName, alwaysDisplay);
 		main.run();
-		//comparaison();
+		comparaison();
 	}
 
 	public static void comparaison() throws IOException {
@@ -48,8 +60,7 @@ public class MainTest {
 			tempExpected = brExpected.readLine();
 			temp = br.readLine();
 		}
-
-		System.out.println("Lignes fausses :" + falseLines);
+		System.out.println(folderName + " : Lignes fausses :" + falseLines);
 
 		if (tempExpected != null || temp != null) {
 			fail("nombre de lignes différentes");

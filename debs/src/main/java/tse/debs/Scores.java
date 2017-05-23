@@ -143,7 +143,7 @@ public class Scores {
 		postsScores.add(10);
 		postsIds.add(Long.parseLong(line[1]));
 		postsStartDates.add(formatter.parseDateTime(line[0]));
-		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10));
+		postsDeathDates.add(formatter.parseDateTime(line[0]).plusDays(10).minusMillis(1));
 		postsAuthors.add(line[4]);
 
 		postsCommentsIds.add(new ArrayList<Long>());
@@ -184,7 +184,7 @@ public class Scores {
 						postsCommentsStartDates.set(i, startDates);
 
 						// Update the death date of the post
-						postsDeathDates.set(i, commentDate.plusDays(10));
+						postsDeathDates.set(i, commentDate.plusDays(10).minusMillis(1));
 
 						int sizeCommentsAuthorsIds = postsCommentsAuthorsIds.get(i).size();
 						long commentAuthorId = Long.parseLong(line[2]);
@@ -235,7 +235,7 @@ public class Scores {
 							postsCommentsStartDates.set(i, startDates);
 
 							// Update the death date of the post
-							postsDeathDates.set(i, commentDate.plusDays(10));
+							postsDeathDates.set(i, commentDate.plusDays(10).minusMillis(1));
 						}
 						break postsLoop;
 					}
@@ -376,30 +376,39 @@ public class Scores {
 	}
 
 	private void deleteDeadPosts() {
+		int j = 0;
 		for (int i = 0; i < deadPosts0.size(); i++) {
-			deletePost(deadPosts0.get(i));
+			deletePost(deadPosts0.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts1.size(); i++) {
-			deletePost(deadPosts1.get(i));
+			deletePost(deadPosts1.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts2.size(); i++) {
-			deletePost(deadPosts2.get(i));
+			deletePost(deadPosts2.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts3.size(); i++) {
-			deletePost(deadPosts3.get(i));
+			deletePost(deadPosts3.get(i) - j);
+			j++;
 		}
 
 		for (int i = 0; i < deadPosts4.size(); i++) {
-			deletePost(deadPosts4.get(i));
+			deletePost(deadPosts4.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts5.size(); i++) {
-			deletePost(deadPosts5.get(i));
+			deletePost(deadPosts5.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts6.size(); i++) {
-			deletePost(deadPosts6.get(i));
+			deletePost(deadPosts6.get(i) - j);
+			j++;
 		}
 		for (int i = 0; i < deadPosts7.size(); i++) {
-			deletePost(deadPosts7.get(i));
+			deletePost(deadPosts7.get(i) - j);
+			j++;
 		}
 	}
 
@@ -414,8 +423,8 @@ public class Scores {
 		// Delete the comments linked to the posts
 		postsCommentsIds.remove(i);
 		postsCommentsStartDates.remove(i);
-		postsCommentsAuthorsNb.remove(i);
 		postsCommentsAuthorsIds.remove(i);
+		postsCommentsAuthorsNb.remove(i);
 
 		for (int j = 0; j < min.size(); j++) {
 			if (min.get(j) > i) {

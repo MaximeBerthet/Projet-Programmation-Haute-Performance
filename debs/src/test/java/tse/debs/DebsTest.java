@@ -15,10 +15,10 @@ public class DebsTest {
 	// String mainPath = "C:/Tests/";
 	static String mainPath = "D:/Users/Baptiste/Documents/Telecom_Saint-Etienne/FISE_2/Semestre_8/ProgrammationHautePerformance/Projet/Tests";
 
-	static String folderName = "10_000"; // !!
+	static String folderName = "Q1PostExpiredComment2"; // !!
 
 	static String path = mainPath + "/" + folderName + "/";
-	static String fileOut = "DEBS" + folderName;
+	static String fileOut = "DEBS_" + folderName;
 
 	static boolean bestpost = false;
 
@@ -26,7 +26,7 @@ public class DebsTest {
 	public void test() throws IOException {
 		Debs d = new Debs(path, fileOut);
 		d.calcul(bestpost);
-		// comparaison();
+		comparaison();
 	}
 
 	public static void comparaison() throws IOException {

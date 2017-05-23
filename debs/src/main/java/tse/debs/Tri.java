@@ -1,6 +1,5 @@
 package tse.debs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Tri {

@@ -21,7 +21,7 @@ public class Debs {
 	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 			.withLocale(Locale.ROOT).withChronology(ISOChronology.getInstanceUTC());
 	private static DateTime date = null;
-
+	private static boolean b = false;
 	private static boolean p = false;
 	private static boolean deuxiemepassage = true;
 	private static boolean premierpassage = true;
@@ -50,22 +50,14 @@ public class Debs {
 		post = reader.readLinePosts();
 
 		while ((post[0] != null) || (comment[0] != null)) {
-
 			if (post[0] == (null) || comment[0] == (null)) {
 				if (post[0] == (null)) {
 					p = false;
 					scores.openComment(comment);
 					nbpost = scores.getPostsIds().size();
 					DateTime dateComment = formatter.parseDateTime(comment[0]);
-					if (nbpost < nbpostAtt) {
-						scores.calcul(dateComment);
 
-					} else {
-						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMaxMin(dateComment);
-					}
-
-					// scores.calcul(dateComment);
+					scores.calcul(dateComment);
 					comment = reader.readLineComments();
 					date = dateComment;
 
@@ -74,15 +66,8 @@ public class Debs {
 					scores.openPost(post);
 					nbpost = scores.getPostsIds().size();
 					DateTime datePost = formatter.parseDateTime(post[0]);
-					if (nbpost < nbpostAtt) {
-						scores.calcul(datePost);
-
-					} else {
-						scores.Maximiser(M1, M2, p, nbpostAtt);
-						scores.calculMaxMin(datePost);
-
-					}
-					// scores.calcul(datePost);
+					
+					scores.calcul(datePost);
 					post = reader.readLinePosts();
 					date = datePost;
 
@@ -91,7 +76,12 @@ public class Debs {
 			} else {
 				DateTime dateComment = formatter.parseDateTime(comment[0]);
 				DateTime datePost = formatter.parseDateTime(post[0]);
-				p = dateComment.isAfter(datePost);
+				b = dateComment.isBefore(datePost);
+				if (b == true) {
+					p = false;
+				} else {
+					p = true;
+				}
 				if (!p) {
 					scores.openComment(comment);
 					nbpost = scores.getPostsIds().size();
@@ -161,14 +151,8 @@ public class Debs {
 			nbpost = scores.getPostsIds().size();
 			if (nbpost >= 3) {
 				M2 = scores.getPostsScores().get(list[2]);
-			} else if ((nbpost == 2)) {
-				M2 = scores.getPostsScores().get(list[1]);
-			} else {
-				M2 = scores.getPostsScores().get(list[0]);
 			}
 
 		}
-		
-		scores.stopTreads();
 	}
 }

@@ -24,7 +24,7 @@ public class Main {
 	private static int[] bestScores = new int[3];
 	private static Long[] bestScoresOld = new Long[3];
 
-	public Main(String path, String fileName, boolean alwaysDisplay) {
+	public Main(String path, String fileName, boolean alwaysDisplay) {		
 		this.alwaysDisplay = alwaysDisplay;
 		this.reader = new Reader(path);
 		this.display = new Display(scores, fileName);
@@ -79,7 +79,10 @@ public class Main {
 			}
 
 			bestScores = tri.Trier(scores.getPostsScores());
-			display();
+			if (bestScores[0] != -1)
+			{
+				display();
+			}
 
 		}
 
